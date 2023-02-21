@@ -1,0 +1,97 @@
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
+    ViewBag.Title = "Home Page";
+
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountIdLogged = session.GetString("UserAccountIdLogged");
+    var userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
+    var userAccountNameLogged = session.GetString("UserAccountNameLogged");
+}
+
+@{
+    if (userAccountIdLogged == "" || userAccountIdLogged == "0" || userAccountIdLogged == null)
+    {
+        
+    }
+    else
+    {
+        <div class="mainDiv">
+            <div class="personalInfo">
+                <div>
+                    <a href="#"><span><img class="userImgPhoto" id="imgUser" name="imgUser" src="~/userNullPhoto.svg" alt="" /></span></a>
+                </div>
+                <div>
+                    <p class="personalInfoText" id="txtFullName" name="txtFullName"></p><br>
+                    <div class="newPersonalInfo">
+                        <div class="newPersonalInfoItem">
+                            <div class="newPersonalInfoItemTitle">Nome de usuário</div>
+                            <div class="newPersonalInfoContent" id="txtUsername" name="txtUsername"></div>
+                        </div>
+                        <div class="newPersonalInfoItem">
+                            <div class="newPersonalInfoItemTitle">E-mail</div>
+                            <div class="newPersonalInfoContent" id="txtEmail" name="txtEmail"></div>
+                        </div>
+                        <div class="newPersonalInfoItem">
+                            <div class="newPersonalInfoItemTitle">Usuário desde</div>
+                            <div class="newPersonalInfoContent" id="txtCreationDate" name="txtCreationDate"></div>
+                        </div>
+                        <div class="newPersonalInfoItem">
+                            <div class="newPersonalInfoItemTitle">Número para contato</div>
+                            <div class="newPersonalInfoContent" id="txtContactNumber" name="txtContactNumber"></div>
+                        </div>
+                        <div class="newPersonalInfoItem">
+                            <div class="newPersonalInfoItemTitle">ID do usuário</div>
+                            <div class="newPersonalInfoContent" id="txtUserAccountId" name="txtUserAccountId"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<script type="text/javascript">
+    var userAccountLoggedData = [];
+    $(document).ready(function () {
+        loadUserAccountData();
+    });
+
+    function formatPhoneNumber(phoneNumber) {
+        return '(' + phoneNumber.substring(0, 2) + ') ' + phoneNumber.substring(2, 7) + '-' + phoneNumber.substring(7);
+    }
+
+    function getUserAccountData(userAccountId) {
+        //$(".loader").show();
+        return new Promise((resolve, reject) => {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetById", "Auth")',
+                "method": "GET",
+                "data": { 'userAccountId': userAccountId }
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function loadUserAccountData(){
+        getUserAccountData('@userAccountIdLogged').then(result => {
+            document.getElementById('txtFullName').textContent = result.name;
+            document.getElementById('txtUsername').textContent = result.username;
+            document.getElementById('txtEmail').textContent = result.email;
+
+            var originalDate = result.creationDate;
+            var date = new Date(originalDate);
+            var formattedDate = (date.getDate().toString().padStart(2, '0') + '/' +
+                                (date.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                                date.getFullYear());
+
+            document.getElementById('txtCreationDate').textContent = formattedDate;
+            document.getElementById('txtContactNumber').textContent = formatPhoneNumber(result.contactNumber);
+            document.getElementById('txtUserAccountId').textContent = result.userAccountId;
+        });
+    }
+</script>

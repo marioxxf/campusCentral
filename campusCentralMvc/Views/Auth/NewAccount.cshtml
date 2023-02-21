@@ -1,0 +1,257 @@
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
+    ViewBag.Title = "Home Page";
+
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountIdLogged = session.GetString("UserAccountIdLogged");
+    var userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
+    var userAccountNameLogged = session.GetString("UserAccountNameLogged");
+}
+
+@{
+    if (userAccountIdLogged == "" || userAccountIdLogged == "0" || userAccountIdLogged == null)
+    {
+        <div class="mainDiv">
+            <h1 class="newUserAccountTitle">Digite seu e-mail</h1>
+            <h2 class="newUserAccountSubTitle">Certifique-se de que você tenha acesso a ele.</h2>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" size="25" id="txtEmail" name="txtEmail" aria-describedby="basic-addon1">
+            </div>
+            <label id="emailCheck" style="margin-bottom: 20px;" name="emailCheck"></label>
+
+            <h1 class="newUserAccountTitle">Escolha como você quer que te chamemos</h1>
+            <h2 class="newUserAccountSubTitle">É importante sabermos seu nome.</h2>
+            <div style="display: flex; gap: 20px;">
+                <div class="input-group mb-3">
+                    <h3 class="newUserAccountMiniTitle">Primeiro nome</h3>
+                    <input type="text" class="form-control" style="width:50px" size="25" id="txtName" name="txtName" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                    <h3 class="newUserAccountMiniTitle">Segundo nome</h3>
+                    <input type="text" class="form-control" style="width:50px" size="25" id="txtNameTwo" name="txtNameTwo" aria-describedby="basic-addon1">
+                </div>
+            </div>
+
+            <h1 class="newUserAccountTitle">Informe seu telefone</h1>
+            <h2 class="newUserAccountSubTitle">Com este telefone, você poderá acessar sua conta.</h2>
+            <div style="display: flex; gap: 7px;">
+                <div style="margin-top: 5px;">
+                    <span>+55</span>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" size="25" id="txtNumber" name="txtNumber" aria-describedby="basic-addon1">
+                    <div class="newUserAccountDescription">&nbsp; DDD + número.</div>
+                </div>
+            </div>
+
+            <h1 class="newUserAccountTitle" onclick="test()">Insira uma senha</h1>
+            <h2 class="newUserAccountSubTitle">Não compartilhe esse dado.</h2>
+            <div style="display: flex; gap: 7px;">
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" size="25" id="txtPass" name="txtPass" aria-describedby="basic-addon1">
+                </div>
+                <div>
+                    <span><img style="margin-top: 10px;" id="imgPass" name="imgPass" onclick="showPass(this.src)" src="~/eye.svg" height="15px" alt="" /></span>
+                </div>
+            </div><br />
+
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <input class="btn btn-primary" type="button" value="Registrar-se" id="btnSave" name="btnSave">
+                <input type="hidden" value="@ViewData["SessionId"]" id="sessionId" name="sessionId" />
+                <input type="hidden" id="txtNickname" name="txtNickname" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <h1>Essa página não está disponível para usuários cadastrados.</h1>
+    }
+}
+<script>
+    function forTests() {
+        document.getElementById('txtEmail').value = "mario@live.com";
+        document.getElementById('txtName').value = "Mario";
+        document.getElementById('txtNameTwo').value = "de Sousa Junior";
+        document.getElementById('txtNumber').value = "11956533567";
+        document.getElementById('txtPass').value = "123";
+    }
+
+    $(document).ready(function () {
+        forTests();
+    });
+
+    function validateNewUserAccountForm() {
+        var email = document.getElementById('txtEmail').value;
+        var emailCheck = document.getElementById('emailCheck').textContent;
+        var name = document.getElementById('txtName').value;
+        var name2 = document.getElementById('txtNameTwo').value;
+        var number = document.getElementById('txtNumber').value;
+        var pass = document.getElementById('txtPass').value;
+
+        document.getElementById('txtNickname').value = name.toLowerCase() + name2.toLowerCase();
+
+        if (emailCheck.match(/não é um.*/) || email == "") {
+            document.getElementById("txtEmail").focus();
+        } else if (name.length < 3 || name == "") {
+            document.getElementById("txtName").focus();
+        } else if (name2.length < 3 || name2 == "") {
+            document.getElementById("txtNameTwo").focus();
+        } else if (number.length > 11 || number == "") {
+            document.getElementById("txtNumber").focus();
+        } else if (pass == "") {
+            document.getElementById("txtPass").focus();
+        } else {
+            document.getElementById('btnSubmit').click();
+        }
+    }
+
+    /* Email's Validate */
+    const validateEmail = (email) => {
+        return email.match(
+            /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+    const validateEmailOfNewUserAccountForm = () => {
+        const $result = $('#emailCheck');
+        const email = $('#txtEmail').val();
+        $result.text('');
+
+        if (validateEmail(email)) {
+            /*$result.text(email + ' é um e-mail válido.');
+            $result.css('color', 'green');*/
+        } else if (email == "") {
+            $result.text(email + 'Este campo não pode ser vazio.');
+            $result.css('color', 'red');
+        }
+        else {
+            $result.text(email + ' não é um e-mail válido.');
+            $result.css('color', 'red');
+        }
+        return false;
+    }
+    $('#txtEmail').on('input', validateEmailOfNewUserAccountForm);
+
+    function showPass(src) {
+        var fileNameOfSrc = src.replace(/^.*[\\\/]/, '');
+        if (fileNameOfSrc.match(/eye.svg.*/)) {
+            var newFileNameOfSrc = "eye-off.svg";
+            var newSrc = newFileNameOfSrc;
+            document.getElementById('imgPass').src = newSrc;
+        }
+        else if (fileNameOfSrc.match(/eye-off.svg.*/)) {
+            var newFileNameOfSrc = "eye.svg";
+            var newSrc = newFileNameOfSrc;
+            document.getElementById('imgPass').src = newSrc;
+        }
+        var x = document.getElementById("txtPass");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    function encryptPass(password) {
+        var key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+        var text = password;
+        var textBytes = aesjs.utils.utf8.toBytes(text);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+        var encryptedBytes = aesCtr.encrypt(textBytes);
+        var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+        return encryptedHex;
+    }
+
+    function generateUsername(fullName) {
+        const parts = fullName.split(" ");
+        let username = parts[0].toLowerCase();
+
+        for (let i = 1; i < parts.length; i++) {
+            let part = parts[i];
+            username += part[0].toUpperCase() + part.slice(1).toLowerCase();
+            if (username.length > 40) break;
+        }
+
+        return username.slice(0, 40);
+    }
+
+
+    function decryptPass(encryptedHexOfPassword) {
+        var key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+        var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHexOfPassword);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+        var decryptedPass = aesjs.utils.utf8.fromBytes(decryptedBytes);
+    }
+
+    function getAllUserAccounts() {
+        return new Promise((resolve, reject) => {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetAllUserAccounts", "Auth")',
+                "method": "GET"
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    $("#btnSave").click(function () {
+        decryptPass($("#txtPass").val());
+        var rest = $("#txtNameTwo").val().length;
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+        var day = date.getDate().toString().padStart(2, '0');
+        var formattedDate = year + "-" + month + "-" + day;
+        var oUserAccount = {
+            UserAccountId: "0",
+            Name: $("#txtName").val() + " " + $("#txtNameTwo").val(),
+            Username: generateUsername($("#txtName").val() + " " + $("#txtNameTwo").val()),
+            Email: $("#txtEmail").val(),
+            ContactNumber: $("#txtNumber").val(),
+            Password: encryptPass($("#txtPass").val()),
+            AccessLevel: 1,
+            LoginStatus: 1,
+            CreationDate: formattedDate,
+            SessionId: $("#sessionId").val()
+        };
+
+        /* Check username availability */
+        getAllUserAccounts().then(result => {
+            var listOfUsernamesUsed = result;
+            for (var p = 0; p < listOfUsernamesUsed.length; p++) {
+                if (oUserAccount.Username == listOfUsernamesUsed[p].username) {
+                    oUserAccount.Username = oUserAccount.Username + Math.floor(Math.random() * 10).toString();
+                }
+                else {
+                }
+            }
+
+            /* Check email availability */
+            for (var o = 0; o < listOfUsernamesUsed.length; o++) {
+                if (oUserAccount.Email == listOfUsernamesUsed[o].email) {
+                    document.getElementById("txtEmail").focus();
+                    document.getElementById('emailCheck').style.color = "red";
+                    document.getElementById('emailCheck').textContent = "O e-mail inserido já está em uso. Por favor, utilize outro.";
+                    return;
+                }
+                else {
+                }
+            }
+
+            if (document.getElementById('emailCheck').textContent == "") {
+                $.post("/Auth/AddUserAccount", oUserAccount)
+                    .done(function (data) {
+                        location.reload();
+                    })
+            } else {
+                document.getElementById("txtEmail").focus();
+            }
+        });
+    })
+</script>

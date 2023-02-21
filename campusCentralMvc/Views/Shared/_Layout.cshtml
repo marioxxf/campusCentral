@@ -1,0 +1,317 @@
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountIdLogged = "";
+    var userAccountUsernameLogged = "";
+    var userAccountNameLogged = "";
+    if (session.GetString("UserAccountIdLogged") != null)
+    {
+        userAccountIdLogged = session.GetString("UserAccountIdLogged");
+    }
+
+    if (session.GetString("UserAccountUsernameLogged") != null)
+    {
+        userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
+    }
+
+    if (session.GetString("UserAccountNameLogged") != null)
+    {
+        userAccountNameLogged = session.GetString("UserAccountNameLogged");
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/campusCentralMvc.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+</head>
+<style>
+    html, body {
+        background-color: #e1e2e3;
+    }
+</style>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 navbarGioiano">
+            <div class="container-fluid containerNavbarGioiano">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">campusCentralMvc</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Página principal</a>
+                        </li>
+                        @{
+                            if (userAccountIdLogged != "0" && userAccountIdLogged != "")
+                            {
+                                <li>
+                                    <div class="dropdown dropdownGioiano">
+                                        <button type="button" class="btn-sm dropdown-toggle btnDropdownGioiano" data-bs-toggle="dropdown">
+                                            <img style="margin-left: 10px; margin-right: 3px; margin-top: -2px;" src="~/user-black.svg" height="20px" alt="" />@userAccountNameLogged
+                                        </button>
+                                        <ul class="dropdown-menu menuDropdownGioiano">
+                                            <li><a class="dropdown-item" href="/auth/myaccount">Minha conta</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a class="dropdown-item" onclick="disconnectUserAccount()" href="#">Desconectar</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <div class="dropdown dropdownGioiano">
+                                        <button type="button" class="btn-sm dropdown-toggle btnDropdownGioiano" data-bs-toggle="dropdown">
+                                            Crie sua conta ou faça login
+                                        </button>
+                                        <ul class="dropdown-menu menuDropdownGioiano">
+                                            <li>
+                                                <a class="dropdown-item" href="/auth/newaccount">Criar conta</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" data-bs-toggle="modal" href="#" data-bs-target="#exampleModal">Logar-se</a>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Faça o login e aproveite nossa plataforma</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modalBodyGioiano">
+                    <div class="loginUserAccountMain">
+                        <h1 class="newUserAccountTitle">Digite seu e-mail</h1>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control inputGioiano" id="txtEmailLoginForm" name="txtEmailLoginForm" aria-describedby="basic-addon1">
+                        </div>
+                        <label id="emailCheckLoginForm" name="emailCheckLoginForm"></label><br /><br />
+
+                        <h1 class="newUserAccountTitle">Insira uma senha</h1>
+                        <div style="display: inline-flex; gap: 7px;">
+                            <div class="input-group mb-3">
+                                <input oninput="resetPassEntered()" type="password" class="form-control passwordInputGioiano" id="txtPassLoginForm" name="txtPassLoginForm" aria-describedby="basic-addon1">
+                            </div>
+                            <div>
+                                <a href="#"><span><img style="margin-top: 10px;" id="imgPassLoginForm" name="imgPassLoginForm" onclick="showPassLoginForm(this.src)" src="~/eye.svg" height="15px" alt="" /></span></a>
+                            </div>
+                        </div><br />
+                        <label id="passCheck" name="passCheck"></label><br /><br />
+
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <input class="btn btn-primary" type="button" value="Logar-se" onclick="validateForm();">
+                            <input type="hidden" value="@ViewData["SessionId"]" id="sessionIdLoginForm" name="sessionIdLoginForm" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - campusCentralMvc
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script>
+    function disconnectUserAccount() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DisconnectUserAccountLogged", "Auth")',
+            success: function (response) {
+                console.log("User Account has been disconnected.");
+                window.location.href = "/";
+            }
+        });
+    }
+    /* Abaixo, funções da modal */
+    function encryptPass(password) {
+        var key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+        var text = password;
+        var textBytes = aesjs.utils.utf8.toBytes(text);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+        var encryptedBytes = aesCtr.encrypt(textBytes);
+        var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+        return encryptedHex;
+    }
+
+    function resetPassEntered() {
+        document.getElementById('passCheck').textContent = "";
+    }
+
+    function checkEmail(email) {
+        return new Promise((resolve, reject) => {
+            /* Check if email exists */
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetByEmail", "Auth")',
+                "method": "GET",
+                "data": { 'emailToFind': email }
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.email == null) {
+                    resolve("nok");
+                }
+                else {
+                    resolve("ok");
+                }
+            });
+        });
+    }
+
+    function checkPass(pass, email) {
+        return new Promise((resolve, reject) => {
+            /* Check if email exists */
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetByPassAndEmail", "Auth")',
+                "method": "GET",
+                "data": { 'passToFind': pass, 'emailToFind': email }
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.email == null) {
+                    resolve("nok");
+                }
+                else {
+                    resolve("ok");
+                }
+            });
+        });
+    }
+
+    function validateForm() {
+        var email = document.getElementById('txtEmailLoginForm').value;
+        var emailValidator = "";
+        checkEmail(email).then(result => {
+            emailValidator = result;
+        });
+
+        var emailCheckLoginForm = document.getElementById('emailCheckLoginForm').textContent;
+        var pass = document.getElementById('txtPassLoginForm').value;
+        pass = encryptPass(pass);
+        var passValidator = "";
+        checkPass(pass, email).then(result => {
+            passValidator = result;
+        });
+
+
+        /* Form validation */
+        setTimeout(function () {
+            if (emailCheckLoginForm.match(/não é um.*/) || email == "") {
+                document.getElementById("txtEmailLoginForm").focus();
+                document.getElementById('emailCheckLoginForm').style.color = "red";
+                document.getElementById('emailCheckLoginForm').textContent = "Insira um e-mail válido para tentar autenticar-se.";
+            }
+            else if (pass.length < 1) {
+                document.getElementById("txtPassLoginForm").focus();
+                document.getElementById('passCheck').style.color = "red";
+                document.getElementById('passCheck').textContent = "Precisamos de uma senha para autenticar você.";
+            }
+            else if (emailValidator == "nok") {
+                document.getElementById("txtEmailLoginForm").focus();
+                document.getElementById('emailCheckLoginForm').style.color = "red";
+                document.getElementById('emailCheckLoginForm').textContent = "O e-mail inserido não está cadastrado.";
+            } else if (passValidator == "nok") {
+                document.getElementById("txtPassLoginForm").focus();
+                document.getElementById('passCheck').style.color = "red";
+                document.getElementById('passCheck').textContent = "Senha incorreta.";
+            }
+            else {
+                setTimeout(function () {
+                    window.location.href = "/auth/myaccount";
+                }, 1500);
+            }
+        }, 1000);
+    }
+
+    /* For see entered password */
+    function showPassLoginForm(src) {
+        var fileNameOfSrc = src.replace(/^.*[\\\/]/, '');
+        if (fileNameOfSrc.match(/eye.svg.*/)) {
+            var newFileNameOfSrc = "eye-off.svg";
+            var newSrc = newFileNameOfSrc;
+            document.getElementById('imgPassLoginForm').src = newSrc;
+        }
+        else if (fileNameOfSrc.match(/eye-off.svg.*/)) {
+            var newFileNameOfSrc = "eye.svg";
+            var newSrc = newFileNameOfSrc;
+            document.getElementById('imgPassLoginForm').src = newSrc;
+        }
+        var x = document.getElementById("txtPassLoginForm");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    /* Email's Validate */
+    const validateEmailTwo = (email) => {
+        return email.match(
+            /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+    const validate = () => {
+        const $result = $('#emailCheckLoginForm');
+        const email = $('#txtEmailLoginForm').val();
+        $result.text('');
+
+        if (validateEmailTwo(email)) {
+            /*$result.text(email + ' é um e-mail válido.');
+            $result.css('color', 'green');*/
+        } else if (email == "") {
+            $result.text(email + 'Este campo não pode ser vazio.');
+            $result.css('color', 'red');
+        }
+        else {
+            $result.text(email + ' não é um e-mail válido.');
+            $result.css('color', 'red');
+        }
+        return false;
+    }
+    $('#txtEmailLoginForm').on('input', validate);
+</script>
