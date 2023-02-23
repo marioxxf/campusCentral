@@ -351,6 +351,37 @@ select {
     }
 }
 
+.mainIcons {
+    padding: 15px 15px 15px 15px;
+}
+
+.notice {
+    background-color: #e1e2e3;
+    padding: 15px 15px 15px 15px;
+    border-radius: 8px;
+}
+
+.noticeText{
+    margin-top: 10px;
+}
+
+.noticeJumpLine {
+    margin-top: 15px;
+}
+
+.noticeOwner {
+    margin-left: 5px;
+}
+
+.noticeDateTime {
+    margin-left: 5px;
+    margin-top: -18px;
+}
+
+.noticeOwnerProfilePhoto {
+    border-radius: 3px;
+}
+
 /* Dropdown Gioiano */
 .dropdownGioiano {
     margin-top: -3px;
