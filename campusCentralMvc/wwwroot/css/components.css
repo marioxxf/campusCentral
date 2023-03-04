@@ -353,6 +353,18 @@ select {
 
 .mainIcons {
     padding: 15px 15px 15px 15px;
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.mainIcons > div {
+    flex-basis: calc(33.33% - 50px);
+}
+
+.iconDiv label {
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .notice {
