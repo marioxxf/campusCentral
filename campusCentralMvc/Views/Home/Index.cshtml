@@ -1,27 +1,58 @@
-﻿@{
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
     ViewData["Title"] = "Home Page";
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountNameLogged = "";
+    if (session.GetString("UserAccountNameLogged") != null)
+    {
+        userAccountNameLogged = session.GetString("UserAccountNameLogged");
+    }
 }
 
 <div style="display: flex;">
-    <div class="mainDiv" id="div1" style="width: 70%; max-height: 450px;">
+    <div class="mainDiv" id="div1" style="width: 70%; max-height: 550px;">
         <div class="mainIcons">
             <div class="iconDiv">
-                <label>Horários de aula</label><br />
-                <a href="#"><span><img src="~/scheduleIcon.svg" height="50px" /></span></a>
+                <label>Meu cronograma (Horários de aula)</label><br />
+                <a href="#"><span><img src="~/scheduleIcon.svg" /></span></a>
             </div>
             <div class="iconDiv">
-                <label>Matérias matriculadas</label>
-                <a href="#"><span><img src="~/studentGrade.svg" height="125px" /></span></a><br />
+                <label>Matérias matriculadas</label><br />
+                <a href="#"><span><img src="~/studentGrade.svg" /></span></a>
             </div>
             <div class="iconDiv">
-                <label>Minhas notas</label>
-                <a href="#"><span><img src="~/podium.svg" height="125px" /></span></a><br />
+                <label>Meu desempenho (Notas e mais)</label><br />
+                <a href="#"><span><img src="~/podium.svg"/></span></a>
             </div>
             <div class="iconDiv">
-                <label>Minhas faltas</label>
-                <a href="#"><span><img src="~/awayStudent.svg" height="125px" /></span></a><br />
+                <label>Minha freq. (Faltas e presenças)</label><br />
+                <a href="#"><span><img src="~/activity.svg"/></span></a>
+            </div>
+            <div class="iconDiv">
+                <label>Aba ainda indefinida</label><br />
+                <a href="#"><span><img src="~/awayStudent.svg" /></span></a>
+            </div>
+        </div><br />
+        <div style="display: flex;">
+            <div class="stats" style="width: 50%; height: 350px; margin-right: 20px;">
+                <div class="statsUserArea">
+                    <div style="display: flex;">
+                        <div>
+                            <img class="userImgOfStatsUserArea" src="~/exampleUserProfilePhoto2.jpg" />
+                        </div>
+                        <div>
+                            <p class="usernameOfStatsUserArea"><b>Aluno</b> @userAccountNameLogged</p>
+                            <p class="userSignInUniversityDate"><b>Matriculado desde</b> 05/11/2020</p>
+                        </div>
+                    </div>
+                    <div class="statsDetails">
+                    </div>
+                </div>
+            </div>
+            <div class="stats" style="width: 50%; height: 350px;">
             </div>
         </div>
+        
     </div>
     <div class="mainDiv" id="div2" style="width: 30%;">
         <div id="noticeContainer" name="noticeContainer">
@@ -35,7 +66,6 @@
                         <p class="noticeDateTime">há 47m</p>
                     </div>
                 </div>
-            
                 <p class="noticeText">
                     Sed lorem ipsum dolor sit amet nullam consequat feugiat consequat magna
                     adipiscing magna etiam amet veroeros. Lorem ipsum dolor tempus sit cursus.

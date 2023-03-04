@@ -354,17 +354,50 @@ select {
 .mainIcons {
     padding: 15px 15px 15px 15px;
     display: flex;
-    gap: 50px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .mainIcons > div {
-    flex-basis: calc(33.33% - 50px);
+    flex-basis: calc(23.23% - 30px);
 }
 
 .iconDiv label {
     margin-bottom: 10px;
     font-size: 14px;
+    text-align: center;
+    margin: auto;
+    font-weight: bold;
+}
+
+.iconDiv img {
+    text-align: center;
+    height: 35px;
+    margin: auto;
+    display: block;
+    margin-top: 5px;
+}
+
+.stats {
+    background-color: #e1e2e3;
+    padding: 15px 15px 15px 15px;
+    border-radius: 8px;
+}
+
+.userImgOfStatsUserArea{
+    border-radius: 3px;
+    width: 90px;
+    height: 60px;
+}
+
+.usernameOfStatsUserArea {
+    margin-left: 5px;
+}
+
+.userSignInUniversityDate {
+    margin-left: 5px;
+    font-size: 12px;
+    margin-top: -18px;
 }
 
 .notice {
