@@ -9,8 +9,10 @@
     }
 }
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div style="display: flex;">
-    <div class="mainDiv" id="div1" style="width: 70%; max-height: 550px;">
+    <div class="mainDiv" id="div1" style="width: 70%; max-height: 630px;">
         <div class="mainIcons">
             <div class="iconDiv">
                 <label>Meu cronograma (Horários de aula)</label><br />
@@ -34,7 +36,7 @@
             </div>
         </div><br />
         <div style="display: flex;">
-            <div class="stats" style="width: 50%; height: 350px; margin-right: 20px;">
+            <div class="stats" style="width: 50%; height: 425px; margin-right: 20px;">
                 <div class="statsUserArea">
                     <div style="display: flex;">
                         <div>
@@ -42,14 +44,15 @@
                         </div>
                         <div>
                             <p class="usernameOfStatsUserArea"><b>Aluno</b> @userAccountNameLogged</p>
-                            <p class="userSignInUniversityDate"><b>Matriculado desde</b> 05/11/2020</p>
+                            <p class="userSignInUniversityDate"><b>Matriculado desde</b> 05/11/2020</p><br />
                         </div>
                     </div>
                     <div class="statsDetails">
+                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="stats" style="width: 50%; height: 350px;">
+            <div class="stats" style="width: 50%; height: 425px;">
             </div>
         </div>
         
@@ -116,3 +119,51 @@
         </div>
     </div>
 </div>
+
+<script>
+    
+
+    $(document).ready(function () {
+        const ctx = document.getElementById("myChart").getContext("2d");
+        const myChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho"],
+                datasets: [
+                    {
+                        label: "Vendas",
+                        data: [12, 19, 3, 5, 2, 3, 7],
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.2)",
+                            "rgba(54, 162, 235, 0.2)",
+                            "rgba(255, 206, 86, 0.2)",
+                            "rgba(75, 192, 192, 0.2)",
+                            "rgba(153, 102, 255, 0.2)",
+                            "rgba(255, 159, 64, 0.2)",
+                            "rgba(255, 99, 132, 0.2)"
+                        ],
+                        borderColor: [
+                            "rgba(255, 99, 132, 1)",
+                            "rgba(54, 162, 235, 1)",
+                            "rgba(255, 206, 86, 1)",
+                            "rgba(75, 192, 192, 1)",
+                            "rgba(153, 102, 255, 1)",
+                            "rgba(255, 159, 64, 1)",
+                            "rgba(255, 99, 132, 1)"
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                height: 100,
+                width: 300,
+                legend: {
+                    display: true
+                }
+            }
+        });
+    });
+</script>
