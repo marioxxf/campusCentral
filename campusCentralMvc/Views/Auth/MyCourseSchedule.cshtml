@@ -1,4 +1,6 @@
-﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+﻿@using Newtonsoft.Json;
+@using campusCentralMvc.Controllers;
+@inject MiddlewareForUseSessionVariables middlewareForSessionUse
 @{
     ViewBag.Title = "Home Page";
 
@@ -6,6 +8,14 @@
     var userAccountIdLogged = session.GetString("UserAccountIdLogged");
     var userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
     var userAccountNameLogged = session.GetString("UserAccountNameLogged");
+
+    List<UserAccountCourseSchedule> userAccountCourseSchedules = new List<UserAccountCourseSchedule>();
+    var authController = new AuthController();
+    userAccountCourseSchedules = await authController.GetUserAccountCourseScheduleByUserAccountId(int.Parse(userAccountIdLogged));
+
+    List<Topic> topicsByCourseId = new List<Topic>();
+    var studyDataController = new StudyDataController();
+    topicsByCourseId = await studyDataController.GetAllTopics();
 }
 @{
     if (userAccountIdLogged == "" || userAccountIdLogged == "0" || userAccountIdLogged == null)
@@ -16,8 +26,51 @@
     {
         <div class="mainDiv">
             <div class="myCourseScheduleMain">
-                <label>Minhas matérias</label>
-                <table id="myTable" class="table">
+                <label>Minhas matérias matriculadas para o semestre atual</label>
+                <div class="topicDisplay">
+
+                    @{
+                        foreach (var topic in userAccountCourseSchedules)
+                        {
+                            var topicStatus = "";
+                            var topicStatusColor = "";
+                            if(topic.TopicTravelStatus == 1)
+                            {
+                                topicStatus = "Em curso";
+                            } else if(topic.TopicTravelStatus == 2)
+                            {
+                                topicStatus = "Aprovado";
+                                topicStatusColor = "#54b360";
+                            } else if(topic.TopicTravelStatus == 3)
+                            {
+                                topicStatus = "Reprovado";
+                                topicStatusColor = "#c91a1a";
+                            }
+
+                            foreach (var topicInfo in topicsByCourseId)
+                            {
+                                if(topicInfo.Name == topic.TopicNameAssigned)
+                                {
+                                    <div class="topic">
+                                        <div style="display: flex;">
+                                            <div>
+                                                <label class="topicTitle">@topic.TopicNameAssigned</label><br />
+                                                <p class="topicStatus" style="color: @topicStatusColor">@topicStatus</p>
+                                                <p class="topicPeriodAttended">@topic.TopicPeriodAttended</p>
+                                                <p class="topicFinalScoreTitle">Nota final <b class="topicFinalScore">@topic.TopicFinalScore</b></p>
+                                            </div>
+                                            <div>
+                                                <p class="topicAcronym">@topicInfo.Acronym</p>
+                                                <p>&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                </div>
+                <table id="myTable" class="table" style="display: none;">
 		            <thead>
 			            <tr>
 				            <th>Matéria</th>

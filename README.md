@@ -16,6 +16,14 @@
    </details>
    <details>
       <summary><h4>1.2 My Account's page</h4></summary>
-      <img src="https://i.imgur.com/NK0oeMr.png"></img>
+      <img src="https://i.imgur.com/XZAICh7.png"></img>
+   </details>
+   <details>
+      <summary><h4>1.3 My Course's Schedule page</h4></summary>
+      <details>
+         <summary><h4>1.3.1 My Course's Schedule database structure</h4></summary>
+         <img src="https://i.imgur.com/JmTAENl.png" width="65%" height="65%"></img>
+      </details>
+      <img src="https://i.imgur.com/jsic7CB.png"></img>
    </details>
 </details>

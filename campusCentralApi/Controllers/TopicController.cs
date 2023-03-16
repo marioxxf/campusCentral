@@ -24,6 +24,18 @@ namespace campusCentralApi.Controllers
             return Ok(await _topicRepository.GetAll());
         }
 
+        [HttpGet("course/{id}")]
+        public async Task<ActionResult<IEnumerable<Topic>>> GetUserAccountCourseSchedulesByUserAccountId(int id)
+        {
+            var response = await _topicRepository.GetTopicsByCourseId(id);
+            if (!response.Any())
+            {
+                Topic nullListOfTopicsByCourseId = new Topic();
+                return NotFound(nullListOfTopicsByCourseId);
+            }
+            return Ok(await _topicRepository.GetTopicsByCourseId(id));
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {

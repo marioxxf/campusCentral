@@ -8,6 +8,7 @@ namespace campusCentralApi.Interfaces
         void Edit(Topic Topic);
         void Delete(Topic Topic);
         Task<Topic> GetById(int id);
+        Task<IEnumerable<Topic>> GetTopicsByCourseId(int id);
         Task<Topic> GetByAproximatedName(string toFind);
         Task<IEnumerable<Topic>> GetAll();
         Task<bool> SaveAllAsync();

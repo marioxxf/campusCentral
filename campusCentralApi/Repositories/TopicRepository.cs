@@ -36,6 +36,11 @@ namespace campusCentralApi.Repositories
             return await _context.Topic.Where(x => x.TopicId == id).FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<Topic>> GetTopicsByCourseId(int courseId)
+        {
+            return await _context.Topic.Where(x => x.CourseId == courseId).ToListAsync();
+        }
+
         public async Task<Topic> GetByAproximatedName(string toFind)
         {
             return await _context.Topic.Where(x => x.Name.Contains(toFind)).FirstOrDefaultAsync();

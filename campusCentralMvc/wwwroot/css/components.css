@@ -406,6 +406,48 @@ select {
     margin-top: -17px;
 }
 
+.topic {
+    background-color: #e1e2e3;
+    padding: 7px 7px 7px 7px;
+    border-radius: 8px;
+}
+
+.topicFinalScore {
+    font-size: 20px;
+    font-weight: bold;  
+    margin-top: -5px;
+}
+
+.topicFinalScoreTitle {
+    font-size: 12px;
+}
+
+.topicTitle {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.topicAcronym {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.topicStatus {
+    font-size: 13px;
+}
+
+.topicPeriodAttended {
+    margin-top: -18px;
+    font-size: 13px;
+}
+
+.topicDisplay {
+    padding: 15px 15px 15px 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .notice {
     background-color: #e1e2e3;
     padding: 15px 15px 15px 15px;

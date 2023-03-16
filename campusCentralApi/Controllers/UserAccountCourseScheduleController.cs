@@ -30,7 +30,7 @@ namespace campusCentralApi.Controllers
             var response = await _userAccountCourseScheduleRepository.GetAllByUserAccountId(id);
             if (!response.Any())
             {
-                UserAccountCourseSchedule nullUserAccountCourseSchedule = new UserAccountCourseSchedule();
+                List<UserAccountCourseSchedule> nullUserAccountCourseSchedule = new List<UserAccountCourseSchedule>();
                 return NotFound(nullUserAccountCourseSchedule);
             }
             return Ok(await _userAccountCourseScheduleRepository.GetAllByUserAccountId(id));
