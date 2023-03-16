@@ -20,7 +20,7 @@
             </div>
             <div class="iconDiv">
                 <label>Matérias matriculadas</label><br />
-                <a href="#"><span><img src="~/studentGrade.svg" /></span></a>
+                <a href="/auth/mycourseschedule"><span><img src="~/studentGrade.svg" /></span></a>
             </div>
             <div class="iconDiv">
                 <label>Meu desempenho (Notas e mais)</label><br />
@@ -44,9 +44,10 @@
                         </div>
                         <div>
                             <p class="usernameOfStatsUserArea"><b>Aluno</b> @userAccountNameLogged</p>
-                            <p class="userSignInUniversityDate"><b>Matriculado desde</b> 05/11/2020</p><br />
+                            <p class="userSignInUniversityDate"><b>Matriculado desde</b> 05/11/2020</p>
+                            <p class="userSignInActuallySem"><b>Cursando o </b>6o semestre</p>
                         </div>
-                    </div>
+                    </div><br /><br /><br /><br /><br /><br /><br />
                     <div class="statsDetails">
                         <canvas id="myChart"></canvas>
                     </div>
@@ -92,7 +93,7 @@
                 <p class="noticeText">
                     Sed lorem ipsum dolor sit amet nullam consequat feugiat consequat magna
                     adipiscing magna etiam amet veroeros. Lorem ipsum dolor tempus sit cursus.
-                    Tempus nisl et nullam lorem ipsum dolor sit amet aliquam.
+                    Tempus nisl et nullam lorem ipsum dolor sit amet aliquam. Donec bibendum metus interdum blandit congue. Sed porttitor auctor eros ac finibus. Morbi justo dui, volutpat ac laoreet id, scelerisque ut turpis. Cras enim magna, consectetur at turpis at, iaculis lobortis ipsum. Praesent scelerisque finibus est, vitae auctor nibh auctor non. Mauris arcu justo, facilisis non vestibulum eget, venenatis nec nunc.
                 </p>
             </div>
             <div class="noticeJumpLine"></div>
@@ -126,12 +127,12 @@
     $(document).ready(function () {
         const ctx = document.getElementById("myChart").getContext("2d");
         const myChart = new Chart(ctx, {
-            type: "pie",
+            type: "bar",
             data: {
-                labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho"],
+                labels: ["Matéria 1", "Matéria 2", "Matéria 3", "Matéria 4", "Matéria 5", "Matéria 6", "Matéria 7"],
                 datasets: [
                     {
-                        label: "Vendas",
+                        label: "Faltas",
                         data: [12, 19, 3, 5, 2, 3, 7],
                         backgroundColor: [
                             "rgba(255, 99, 132, 0.2)",
@@ -140,7 +141,7 @@
                             "rgba(75, 192, 192, 0.2)",
                             "rgba(153, 102, 255, 0.2)",
                             "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 99, 132, 0.2)"
+                            "rgba(32, 17, 232, 0.2)"
                         ],
                         borderColor: [
                             "rgba(255, 99, 132, 1)",

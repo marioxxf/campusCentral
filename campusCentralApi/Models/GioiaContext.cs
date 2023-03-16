@@ -18,6 +18,9 @@ namespace campusCentralApi.Models
         {
         }
         public virtual DbSet<UserAccount> UserAccount { get; set; }
+        public virtual DbSet<Course> Course { get; set; }
+        public virtual DbSet<Topic> Topic { get; set; }
+        public virtual DbSet<UserAccountCourseSchedule> UserAccountCourseSchedule { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

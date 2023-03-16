@@ -1,0 +1,78 @@
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
+    ViewBag.Title = "Home Page";
+
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountIdLogged = session.GetString("UserAccountIdLogged");
+    var userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
+    var userAccountNameLogged = session.GetString("UserAccountNameLogged");
+}
+@{
+    if (userAccountIdLogged == "" || userAccountIdLogged == "0" || userAccountIdLogged == null)
+    {
+        
+    }
+    else
+    {
+        <div class="mainDiv">
+            <div class="myCourseScheduleMain">
+                <label>Minhas matérias</label>
+                <table id="myTable" class="table">
+		            <thead>
+			            <tr>
+				            <th>Matéria</th>
+				            <th>Situação</th>
+				            <th>Nota final</th>
+				            <th>Período cursado</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+		            </tbody>
+	            </table>
+            </div>
+        </div>
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadUserAccountCourseSchedule();
+    });
+    function getUserAccountCourseSchedule(userAccountId) {
+        return new Promise((resolve, reject) => {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetUserAccountCourseScheduleByUserAccountId", "Auth")',
+                "method": "GET",
+                "data": { 'userAccountId': userAccountId }
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function loadUserAccountCourseSchedule() {
+        getUserAccountCourseSchedule('1').then(result => {
+            console.log(result); 
+            
+            // Seleciona a tabela HTML
+		    var table = document.getElementById("myTable");
+
+		    // Adiciona as linhas na tabela com as informações do array "result"
+		    for (var i = 0; i < result.length; i++) {
+			    var row = table.insertRow(-1);
+			    var cell1 = row.insertCell(0);
+			    var cell2 = row.insertCell(1);
+			    var cell3 = row.insertCell(2);
+			    var cell4 = row.insertCell(3);
+			    cell1.innerHTML = result[i].topicNameAssigned;
+			    cell2.innerHTML = result[i].topicTravelStatus;
+			    cell3.innerHTML = result[i].topicFinalScore;
+			    cell4.innerHTML = result[i].topicPeriodAttended;
+		    }
+        });
+    }
+</script>

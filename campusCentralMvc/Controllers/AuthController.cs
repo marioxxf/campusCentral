@@ -10,6 +10,7 @@ namespace campusCentralMvc.Controllers
     {
         HttpClientHandler _clientHandler = new HttpClientHandler();
         UserAccount _oUserAccount = new UserAccount();
+        List<UserAccountCourseSchedule> _oUserAccountCourseSchedules = new List<UserAccountCourseSchedule>();
         List<UserAccount> _oUserAccounts = new List<UserAccount>();
         public IActionResult NewAccount()
         {
@@ -19,6 +20,13 @@ namespace campusCentralMvc.Controllers
         }
 
         public IActionResult MyAccount()
+        {
+            HttpContext.Session.SetString("SessionKey", "Any"); // Isso trava a geração de um novo SessionID a cada requisição na mesma instância de navegador
+            ViewData["SessionId"] = HttpContext.Session.Id;
+            return View();
+        }
+
+        public IActionResult MyCourseSchedule()
         {
             HttpContext.Session.SetString("SessionKey", "Any"); // Isso trava a geração de um novo SessionID a cada requisição na mesma instância de navegador
             ViewData["SessionId"] = HttpContext.Session.Id;
@@ -39,6 +47,22 @@ namespace campusCentralMvc.Controllers
                 }
             }
             return _oUserAccount;
+        }
+
+        [HttpGet]
+        public async Task<List<UserAccountCourseSchedule>> GetUserAccountCourseScheduleByUserAccountId(int userAccountId)
+        {
+            _oUserAccountCourseSchedules = new List<UserAccountCourseSchedule>();
+
+            using (var httpClient = new HttpClient(_clientHandler))
+            {
+                using (var response = await httpClient.GetAsync("https://localhost:7200/api/UserAccountCourseSchedule/user/" + userAccountId + "?apiKey=secretKey"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    _oUserAccountCourseSchedules = JsonConvert.DeserializeObject<List<UserAccountCourseSchedule>>(apiResponse);
+                }
+            }
+            return _oUserAccountCourseSchedules;
         }
 
         [HttpGet]
