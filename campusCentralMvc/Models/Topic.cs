@@ -7,5 +7,6 @@
         public string Acronym { get; set;}
         public int TeacherAssignedUserAccountId { get; set; }
         public int CourseId { get; set;}
+        public int SemesterAvailability { get; set;}
     }
 }

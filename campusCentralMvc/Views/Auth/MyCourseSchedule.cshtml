@@ -11,10 +11,13 @@
 
     List<UserAccountCourseSchedule> userAccountCourseSchedules = new List<UserAccountCourseSchedule>();
     var authController = new AuthController();
-    userAccountCourseSchedules = await authController.GetUserAccountCourseScheduleByUserAccountId(int.Parse(userAccountIdLogged));
+    if (userAccountIdLogged != null)
+    {
+        userAccountCourseSchedules = await authController.GetUserAccountCourseScheduleByUserAccountId(int.Parse(userAccountIdLogged));
+    }
 
     List<Topic> topicsByCourseId = new List<Topic>();
-    var studyDataController = new StudyDataController();
+    var studyDataController = new StudyController();
     topicsByCourseId = await studyDataController.GetAllTopics();
 }
 @{

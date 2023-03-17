@@ -20,5 +20,6 @@ namespace campusCentralApi.Models
         [Column(TypeName = "float")]
         public float TopicFinalScore { get; set; }
         public int? TopicPeriodAttended { get; set; }
+        public int? CourseId { get; set; }
     }
 }

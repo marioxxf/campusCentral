@@ -25,7 +25,7 @@ namespace campusCentralApi.Controllers
         }
 
         [HttpGet("course/{id}")]
-        public async Task<ActionResult<IEnumerable<Topic>>> GetUserAccountCourseSchedulesByUserAccountId(int id)
+        public async Task<ActionResult<IEnumerable<Topic>>> GetTopicsByCourseId(int id)
         {
             var response = await _topicRepository.GetTopicsByCourseId(id);
             if (!response.Any())
@@ -34,6 +34,18 @@ namespace campusCentralApi.Controllers
                 return NotFound(nullListOfTopicsByCourseId);
             }
             return Ok(await _topicRepository.GetTopicsByCourseId(id));
+        }
+
+        [HttpGet("course/{courseId}/semester/{semesterAvailability}")]
+        public async Task<ActionResult<IEnumerable<Topic>>> GetTopicsByCourseAndBySemesterAvailability(int courseId, int semesterAvailability)
+        {
+            var response = await _topicRepository.GetTopicsByCourseIdAndSemesterAvailability(courseId, semesterAvailability);
+            if (!response.Any())
+            {
+                Topic nullListOfTopicsByCourseId = new Topic();
+                return NotFound(nullListOfTopicsByCourseId);
+            }
+            return Ok(await _topicRepository.GetTopicsByCourseIdAndSemesterAvailability(courseId, semesterAvailability));
         }
 
         [HttpGet("{id}")]

@@ -1,0 +1,223 @@
+﻿@inject MiddlewareForUseSessionVariables middlewareForSessionUse
+@{
+    ViewData["Title"] = "Home Page";
+    var session = middlewareForSessionUse._httpContextAccessor.HttpContext.Session;
+    var userAccountNameLogged = "";
+    var userAccountIdLogged = "";
+    if (session.GetString("UserAccountNameLogged") != null)
+    {
+        userAccountNameLogged = session.GetString("UserAccountNameLogged");
+        userAccountIdLogged = session.GetString("UserAccountIdLogged");
+    }
+}
+
+<div id="selectCourseArea" name="selectCourseArea">
+    <div class="mainDiv" id="mainDiv1" name="mainDiv1">
+        <div class="enrollmentSection">
+            <label class="enrollmentTitle">Escolha um dos cursos abaixo e faça sua matrícula</label><br />
+            <div class="courseDisplay" id="courseDisplay" name="courseDisplay">
+            </div>
+            <input class="btnGioiano" type="button" value="Avançar" id="btnForStep2" name="btnForStep2" onclick="toStep2()">
+        </div>
+    </div>
+</div>
+
+<div class="topicAreaForEnrollment" id="topicAreaForEnrollment" name="topicAreaForEnrollment">
+    <div class="mainDiv" id="mainDiv2" name="mainDiv2">
+        <label class="enrollmentTitle">Abaixo, as matérias disponíveis para matrícula, referente ao curso escolhido:</label>
+        <div class="topicDisplay" id="topicDisplay" name="topicDisplay">
+        </div>
+        <input class="btnGioiano" type="button" value="Confirmar matrícula" id="btnForStep3" name="btnForStep3" onclick="toStep3()">
+    </div>
+    
+</div>
+<input type="hidden" id="totalTopicsCreated" name="totalTopicsCreated" value="0" />
+<input type="hidden" id="saveCourseIdSelected" name="saveCourseIdSelected" value="0" />
+<input type="hidden" id="totalCoursesLoaded" name="totalCoursesLoaded" value="0" />
+
+<script type="text/javascript">
+    var forEnrollment = [];
+    $(document).ready(function () {
+        loadCourses();
+    });
+
+    function toStep2(){
+        var courseIdSelected = document.getElementById('saveCourseIdSelected').value;
+        if(courseIdSelected == "0"){
+            alert("Escolha um dos cursos para prosseguir, por favor.");
+        } else {
+            const step2Div = document.getElementById("topicAreaForEnrollment");
+            step2Div.style.opacity = "1";
+            step2Div.style.pointerEvents = "auto";
+
+            const step1Div = document.getElementById("selectCourseArea");
+            step1Div.style.opacity = "0.3";
+            step1Div.style.pointerEvents = "none";
+            loadTopicsByCourseAndSemAvailability(courseIdSelected, 1);
+        }
+    }
+
+    function getCourses() {
+        return new Promise((resolve, reject) => {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetAllCourses", "Study")',
+                "method": "GET"
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function saveCourseIdSelected(courseSelected, courseDivId){
+        document.getElementById('saveCourseIdSelected').value = courseSelected;
+        var totalCoursesInThisView = document.getElementById('totalCoursesLoaded').value;
+        for (var j = 0; j < totalCoursesInThisView; j++){
+            var div = document.getElementById('courseDiv' + j);
+            const divStyle = getComputedStyle(div);
+            const backgroundColorOfMyDiv = divStyle.backgroundColor;
+            if (backgroundColorOfMyDiv == "rgb(162, 219, 169)") {
+                document.getElementById('courseDiv' + j).style.backgroundColor = "#e1e2e3";
+                document.getElementById('courseDiv' + j).style.borderColor = "black";
+                document.getElementById('courseLabel' + j).style.color = "#474042";
+            }
+        }
+        document.getElementById(courseDivId).style.backgroundColor = "#a2dba9";
+        document.getElementById(courseDivId).style.borderColor = "#a2dba9";
+        document.getElementById('courseLabel' + getLastNumber(courseDivId)).style.color = "white";
+    }
+
+    function getLastNumber(str) {
+        const match = str.match(/\d+$/); // procura pelo último número inteiro na string
+
+        if (match) {
+            return match[0]; // retorna o número inteiro encontrado
+        } else {
+            return null; // retorna null se não encontrar nenhum número inteiro na string
+        }
+    }
+
+    function loadCourses() {
+        getCourses().then(result => {
+            document.getElementById('totalCoursesLoaded').value = result.length;
+            for(var i = 0; i < result.length; i++){
+                const divX = document.getElementById('courseDisplay');
+                const div = document.createElement('div');
+                div.classList.add('courseContainer');
+                div.id = "courseDiv" + i;
+                div.setAttribute('value', result[i].courseId);
+                div.addEventListener('click', function() {
+                    saveCourseIdSelected(this.getAttribute('value'), this.getAttribute('id'));
+                });
+                const label = document.createElement('label');
+                label.setAttribute('value', result[i].courseId);
+                label.innerText = result[i].name;
+                label.id = "courseLabel" + i;
+                div.appendChild(label);
+                divX.appendChild(div);
+            }
+        });
+    }
+
+    function getTopicsByCourseIdAndSemAvailability(courseIdChosed) {
+        return new Promise((resolve, reject) => {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetTopicsByCourseIdAndBySemesterAvailability", "Study")',
+                "method": "GET",
+                "data": { 'courseId': courseIdChosed, 'semesterAvailability': 1 }
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function getYearAndSemester() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const semester = today.getMonth() < 6 ? "1" : "2";
+        return year + semester;
+    }
+
+    function manageEnrollmentList(courseIdOfThisTopic, topicNameChosed) {
+        for(var p = 0; p < forEnrollment.length; p++){
+            if(forEnrollment[p].TopicNameAssigned == topicNameChosed){
+                forEnrollment.splice(p ,1);
+                document.getElementById(topicNameChosed).style.backgroundColor = "#e1e2e3";
+                document.getElementById(topicNameChosed).style.borderColor = "#e1e2e3";
+                return;
+            }
+        }
+        var UserAccountCourseScheduleItem = {
+            UserAccountId: "@userAccountIdLogged",
+            TopicNameAssigned: topicNameChosed,
+            TopicTravelStatus: 1,
+            TopicFinalScore: 0,
+            TopicPeriodAttended: getYearAndSemester(),
+            CourseId: courseIdOfThisTopic
+        };
+        forEnrollment.push(UserAccountCourseScheduleItem);
+        document.getElementById(topicNameChosed).style.backgroundColor = "#a2dba9";
+        document.getElementById(topicNameChosed).style.borderColor = "#a2dba9";
+    }
+
+    function loadTopicsByCourseAndSemAvailability(courseId, semAvailability) {
+        getTopicsByCourseIdAndSemAvailability(courseId, semAvailability).then(result => {
+            for(var i = 0; i < result.length; i++){
+                var topicDiv = document.createElement("div");
+                topicDiv.className = "topic enrollmentException";
+
+                topicDiv.id = result[i].name;
+                topicDiv.addEventListener('click', function () {
+                    manageEnrollmentList(document.getElementById('saveCourseIdSelected').value, this.getAttribute('id'));
+                });
+
+                var flexDiv = document.createElement("div");
+                flexDiv.style.display = "flex";
+
+                var topicInfoDiv = document.createElement("div");
+                var topicTitleLabel = document.createElement("label");
+                topicTitleLabel.className = "topicTitle";
+                topicTitleLabel.textContent = result[i].name;
+
+                var topicPeriodTitle = document.createElement("p");
+                topicPeriodTitle.className = "topicPeriodTitle";
+                topicPeriodTitle.textContent = "Período ";
+
+                var topicPeriod = document.createElement("b");
+                topicPeriod.className = "topicPeriod";
+                topicPeriod.textContent = "19h às 20h30";
+                topicPeriodTitle.appendChild(topicPeriod);
+
+                topicInfoDiv.appendChild(topicTitleLabel);
+                topicInfoDiv.appendChild(document.createElement("br"));
+                topicInfoDiv.appendChild(document.createElement("br"));
+                topicInfoDiv.appendChild(document.createElement("br"));
+                topicInfoDiv.appendChild(topicPeriodTitle);
+
+                var topicAcronymDiv = document.createElement("div");
+                var topicAcronymLabel = document.createElement("p");
+                topicAcronymLabel.className = "topicAcronym";
+                topicAcronymLabel.textContent = result[i].acronym;
+                topicAcronymDiv.appendChild(topicAcronymLabel);
+                topicAcronymDiv.appendChild(document.createElement("p"));
+                topicAcronymDiv.appendChild(document.createElement("br"));
+
+                flexDiv.appendChild(topicInfoDiv);
+                flexDiv.appendChild(topicAcronymDiv);
+
+                topicDiv.appendChild(flexDiv);
+                document.getElementById("topicDisplay").appendChild(topicDiv);
+            }
+            document.getElementById('totalTopicsCreated').value = result.length;
+        });
+    }
+</script>

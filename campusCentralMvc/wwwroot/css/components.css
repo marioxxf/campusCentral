@@ -412,10 +412,14 @@ select {
     border-radius: 8px;
 }
 
+.enrollmentException:hover {
+    background-color: #a2dba9;
+    cursor: pointer;
+}
+
 .topicFinalScore {
-    font-size: 20px;
-    font-weight: bold;  
-    margin-top: -5px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .topicFinalScoreTitle {
@@ -495,4 +499,63 @@ select {
 
 .menuDropdownGioiano a {
     color: #212529;
+}
+
+.enrollmentSection label {
+    font-size: 14px;
+}
+
+.enrollmentTitle{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.courseDisplay {
+    padding: 15px 15px 15px 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.testLego {
+    text-decoration: none;
+}
+
+.courseContainer {
+    background-color: #e1e2e3;
+    padding: 7px 7px 7px 7px;
+    border-radius: 8px;
+}
+
+.courseContainer:hover {
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.topicAreaForEnrollment {
+    opacity: 0.3; /* define a opacidade da div para 50% */
+    pointer-events: none;
+}
+
+.topicPeriodTitle {
+    font-size: 12px;
+}
+
+.topicPeriod {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btnGioiano {
+    background-color: #474042;
+    border-color: #474042;
+    color: white;
+    border-radius: 3px;
+    font-size: 13px;
+    padding: 5px 5px 5px 5px;
+}
+
+.btnGioiano:hover {
+    border-color: #7d7879;
+    background-color: #7d7879;
 }

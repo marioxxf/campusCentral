@@ -8,5 +8,6 @@
         public int TopicTravelStatus { get; set; }
         public float TopicFinalScore { get; set;}
         public int TopicPeriodAttended { get; set;}
+        public int CourseId { get; set;}
     }
 }
