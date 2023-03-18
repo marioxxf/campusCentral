@@ -30,10 +30,10 @@
         <label class="enrollmentTitle">Você quer estudar em qual período?</label>
         <div class="periodTypeScheduledBtnsArea">
             <div>
-                <input class="btnGioiano" type="button" id="btnMatutino" name="btnMatutino" value="Matutino" onclick="sendTopicScheduleTimesTopicDivs(this.value)">
+                <input class="btnGioiano" type="button" id="btnMatutino" name="btnMatutino" value="Matutino" onclick="sendTopicScheduleTimesTopicDivs(this.value); checkRulesForPassToStep3();">
             </div>
             <div>
-                <input class="btnGioiano" type="button" id="btnNoturno" name="btnNoturno" value="Noturno" onclick="sendTopicScheduleTimesTopicDivs(this.value)">
+                <input class="btnGioiano" type="button" id="btnNoturno" name="btnNoturno" value="Noturno" onclick="sendTopicScheduleTimesTopicDivs(this.value); checkRulesForPassToStep3();">
             </div>
         </div>
         <br />
@@ -68,12 +68,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Segunda-feira</td>
-                                <td>08h30 às 12h</td>
-                                <td>Matemática Discreta</td>
-                            </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Relação final das matérias pré-matriculadas</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -85,7 +85,10 @@
 
 <script type="text/javascript">
     var forEnrollment = [];
+    var topicsByCourseSelected = [];
     var listOfTopicScheduleTimes = [];
+    var checkIfTypePeriodScheduleHasBeenChoosed = "notPicked";
+    var checkIfTypePeriodScheduleHasBeenChoosed2 = "notPicked";
     $(document).ready(function () {
         loadCourses();
     });
@@ -98,11 +101,11 @@
             document.getElementById('btnNoturno').className = "btnGioiano btnGioianoDisabled";
             document.getElementById('btnMatutino').className = "btnGioiano";
         }
-        console.log(listOfTopicScheduleTimes);
         for(var n = 0; n < listOfTopicScheduleTimes.length; n++){
             if (listOfTopicScheduleTimes[n].periodTypeScheduled == periodTypeChosed){
                 document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).textContent = "";
                 document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).innerHTML = listOfTopicScheduleTimes[n].startTime.replace(":", "h").substr(0, 5) + " às " + listOfTopicScheduleTimes[n].endTime.replace(":", "h").substr(0, 5);
+                document.getElementById('dayTitle' + listOfTopicScheduleTimes[n].topicId).innerHTML = listOfTopicScheduleTimes[n].day;
             }
         }
     }
@@ -124,7 +127,38 @@
     }
 
     function toStep3(){
+        var table = document.getElementById("tableForFinalEnrollmentList"); // seleciona a tabela pelo id
+        var rows = table.getElementsByTagName("tr"); // seleciona todas as linhas da tabela
+
+        for (var i = rows.length - 1; i > 0; i--) { // remove as linhas do tbody, começando pela última
+            rows[i].parentNode.removeChild(rows[i]); 
+        }
+
         btnForFinalModal.click();
+        // Crie um array com 7 itens, cada item representa uma aula.
+        var forEnrollmentFinalList = forEnrollment;
+
+        // Obtenha uma referência à tabela HTML pelo ID.
+        var tabela = document.getElementById("tableForFinalEnrollmentList");
+
+        // Percorra o array de aulas e adicione uma nova linha para cada item na tabela.
+        for (var i = 0; i < forEnrollmentFinalList.length; i++) {
+            var aula = forEnrollmentFinalList[i];
+            var novaLinha = tabela.insertRow(-1);
+            var novaColuna1 = novaLinha.insertCell(0);
+            var novaColuna2 = novaLinha.insertCell(1);
+            var novaColuna3 = novaLinha.insertCell(2);
+            var topicIdForEnrollmentFinalList = 0;
+
+            for(var x = 0; x < topicsByCourseSelected.length; x++){
+                if (topicsByCourseSelected[x].name == aula.TopicNameAssigned) {
+                    topicIdForEnrollmentFinalList  = topicsByCourseSelected[x].topicId;
+                }
+            }
+            novaColuna1.innerHTML = document.getElementById('dayTitle' + topicIdForEnrollmentFinalList).textContent;
+            novaColuna2.innerHTML = document.getElementById('topicPeriod' + topicIdForEnrollmentFinalList).textContent;
+            novaColuna3.innerHTML = aula.TopicNameAssigned;
+        }
     }
 
     function getCourses() {
@@ -217,16 +251,44 @@
         return year + semester;
     }
 
+    function checkRulesForPassToStep3(){
+        const element = document.getElementById("btnMatutino");
+
+        if (element.className.includes("btnGioiano btnGioianoDisabled")) {
+            checkIfTypePeriodScheduleHasBeenChoosed = "picked";
+        } else {
+            checkIfTypePeriodScheduleHasBeenChoosed = "notPicked";
+        }
+        const element2 = document.getElementById("btnNoturno");
+
+        if (element2.className.includes("btnGioiano btnGioianoDisabled")) {
+            checkIfTypePeriodScheduleHasBeenChoosed2 = "picked";
+        } else {
+            checkIfTypePeriodScheduleHasBeenChoosed2 = "notPicked";
+        }
+
+        if (forEnrollment.length < 1) {
+            document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
+        } else if (checkIfTypePeriodScheduleHasBeenChoosed == "notPicked" && checkIfTypePeriodScheduleHasBeenChoosed2 == "notPicked") {
+            document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
+        } else {
+            document.getElementById('btnForStep3').className = "btnGioiano";
+        }
+    }
+
     function manageEnrollmentList(courseIdOfThisTopic, topicNameChosed) {
+        checkRulesForPassToStep3();
         for(var p = 0; p < forEnrollment.length; p++){
             if(forEnrollment[p].TopicNameAssigned == topicNameChosed){
                 forEnrollment.splice(p ,1);
                 document.getElementById(topicNameChosed).style.backgroundColor = "#e1e2e3";
                 document.getElementById(topicNameChosed).style.borderColor = "#e1e2e3";
-                if (forEnrollment.length == 0){
+                if (forEnrollment.length == 0 && checkIfTypePeriodScheduleHasBeenChoosed == "notPicked") {
                     document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
+                    checkRulesForPassToStep3();
                 } else {
                     document.getElementById('btnForStep3').className = "btnGioiano";
+                    checkRulesForPassToStep3();
                 }
                 return;
             }
@@ -240,17 +302,16 @@
             CourseId: courseIdOfThisTopic
         };
         forEnrollment.push(UserAccountCourseScheduleItem);
+
+        checkRulesForPassToStep3();
+
         document.getElementById(topicNameChosed).style.backgroundColor = "#a2dba9";
         document.getElementById(topicNameChosed).style.borderColor = "#a2dba9";
-        if (forEnrollment.length == 0) {
-            document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
-        } else {
-            document.getElementById('btnForStep3').className = "btnGioiano";
-        }
     }
 
     function loadTopicsByCourseAndSemAvailability(courseId, semAvailability) {
         getTopicsByCourseIdAndSemAvailability(courseId, semAvailability).then(result => {
+            topicsByCourseSelected = result;
             loadTopicScheduleTimesByCourse(courseId);
             for(var i = 0; i < result.length; i++){
                 var topicDiv = document.createElement("div");
@@ -279,11 +340,17 @@
                 topicPeriod.id = "topicPeriod" + result[i].topicId;
                 topicPeriodTitle.appendChild(topicPeriod);
 
+                var dayTitle = document.createElement("p");
+                dayTitle.className = "topicDayTitle";
+                dayTitle.textContent = result[i].day;
+                dayTitle.id = "dayTitle" + result[i].topicId;
+
                 topicInfoDiv.appendChild(topicTitleLabel);
                 topicInfoDiv.appendChild(document.createElement("br"));
                 topicInfoDiv.appendChild(document.createElement("br"));
                 topicInfoDiv.appendChild(document.createElement("br"));
                 topicInfoDiv.appendChild(topicPeriodTitle);
+                topicInfoDiv.appendChild(dayTitle);
 
                 var topicAcronymDiv = document.createElement("div");
                 var topicAcronymLabel = document.createElement("p");

@@ -19,5 +19,8 @@ namespace campusCentralApi.Models
         [StringLength(25)]
         [Unicode(false)]
         public string PeriodTypeScheduled { get; set; }
+        [StringLength(30)]
+        [Unicode(false)]
+        public string Day { get; set; }
     }
 }

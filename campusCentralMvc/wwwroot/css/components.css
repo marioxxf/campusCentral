@@ -541,6 +541,11 @@ select {
     font-size: 12px;
 }
 
+.topicDayTitle {
+    font-size: 12px;
+    margin-top: -15px;
+}
+
 .topicPeriod {
     font-size: 14px;
     font-weight: bold;
