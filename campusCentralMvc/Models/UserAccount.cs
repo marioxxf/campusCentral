@@ -12,5 +12,6 @@
         public string LoginStatus { get; set;}
         public string CreationDate { get; set;}
         public string SessionId { get; set;}
+        public int ClassGroupId { get; set; }
     }
 }

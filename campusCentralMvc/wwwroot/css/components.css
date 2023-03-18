@@ -408,7 +408,7 @@ select {
 
 .topic {
     background-color: #e1e2e3;
-    padding: 7px 7px 7px 7px;
+    padding: 7px 7px 1px 7px;
     border-radius: 8px;
 }
 
@@ -555,7 +555,42 @@ select {
     padding: 5px 5px 5px 5px;
 }
 
+.btnGioianoDisabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
 .btnGioiano:hover {
     border-color: #7d7879;
     background-color: #7d7879;
+}
+
+.periodTypeScheduledBtnsArea {
+    padding: 15px 15px 15px 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.modalForFinalStepAtEnrollmentProccess {
+    padding: 5px 3px 5px 5px;
+    margin-top: -20px;
+}
+
+.modalForFinalStepAtEnrollmentProcessTitle {
+    font-family: 'roboto-regular';
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modalForFinalStepAtEnrollmentProcessTitleWarn {
+    color: red;
+}
+
+.modalForFinalStepAtEnrollmentProcessTitleWarn2 {
+    color: #e07f09;
+}
+
+.tableGioiano{
+    font-weight: normal;
 }

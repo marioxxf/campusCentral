@@ -17,6 +17,7 @@ namespace campusCentralMvc.Controllers
 
         HttpClientHandler _clientHandler = new HttpClientHandler();
         List<Topic> _oTopics = new List<Topic>();
+        List<TopicScheduleTime> _oTopicScheduleTimes = new List<TopicScheduleTime>();
         List<Course> _oCourses = new List<Course>();
 
         [HttpGet]
@@ -33,6 +34,38 @@ namespace campusCentralMvc.Controllers
                 }
             }
             return _oTopics;
+        }
+
+        [HttpGet]
+        public async Task<List<TopicScheduleTime>> GetAllTopicScheduleTime()
+        {
+            _oTopicScheduleTimes = new List<TopicScheduleTime>();
+
+            using (var httpClient = new HttpClient(_clientHandler))
+            {
+                using (var response = await httpClient.GetAsync("https://localhost:7200/api/TopicScheduleTime?apiKey=secretKey"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    _oTopicScheduleTimes = JsonConvert.DeserializeObject<List<TopicScheduleTime>>(apiResponse);
+                }
+            }
+            return _oTopicScheduleTimes;
+        }
+
+        [HttpGet]
+        public async Task<List<TopicScheduleTime>> GetTopicScheduleTimesByCourseId(int courseId)
+        {
+            _oTopicScheduleTimes = new List<TopicScheduleTime>();
+
+            using (var httpClient = new HttpClient(_clientHandler))
+            {
+                using (var response = await httpClient.GetAsync("https://localhost:7200/api/TopicScheduleTime/course/" + courseId + "?apiKey=secretKey"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    _oTopicScheduleTimes = JsonConvert.DeserializeObject<List<TopicScheduleTime>>(apiResponse);
+                }
+            }
+            return _oTopicScheduleTimes;
         }
 
         [HttpGet]

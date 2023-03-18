@@ -27,19 +27,85 @@
         <label class="enrollmentTitle">Abaixo, as matérias disponíveis para matrícula, referente ao curso escolhido:</label>
         <div class="topicDisplay" id="topicDisplay" name="topicDisplay">
         </div>
-        <input class="btnGioiano" type="button" value="Confirmar matrícula" id="btnForStep3" name="btnForStep3" onclick="toStep3()">
+        <label class="enrollmentTitle">Você quer estudar em qual período?</label>
+        <div class="periodTypeScheduledBtnsArea">
+            <div>
+                <input class="btnGioiano" type="button" id="btnMatutino" name="btnMatutino" value="Matutino" onclick="sendTopicScheduleTimesTopicDivs(this.value)">
+            </div>
+            <div>
+                <input class="btnGioiano" type="button" id="btnNoturno" name="btnNoturno" value="Noturno" onclick="sendTopicScheduleTimesTopicDivs(this.value)">
+            </div>
+        </div>
+        <br />
+        <input class="btnGioiano btnGioianoDisabled" type="button" value="Confirmar solicitação de matrícula" id="btnForStep3" name="btnForStep3" onclick="toStep3()">
     </div>
     
 </div>
 <input type="hidden" id="totalTopicsCreated" name="totalTopicsCreated" value="0" />
-<input type="hidden" id="saveCourseIdSelected" name="saveCourseIdSelected" value="0" />
+<input type="hidden" id="saveCourseIdSelected" name="saveCotopicPeriodurseIdSelected" value="0" />
 <input type="hidden" id="totalCoursesLoaded" name="totalCoursesLoaded" value="0" />
+<a class="dropdown-item" data-bs-toggle="modal" href="#" data-bs-target="#modalForFinalStep" style="display:none;" id="btnForFinalModal" name="btnForFinalModal">For open modal</a>
+
+<!-- Modal -->
+<div class="modal fade" id="modalForFinalStep" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Confirme sua solicitação de matrícula abaixo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modalBodyGioiano">
+                <div class="modalForFinalStepAtEnrollmentProccess">
+                    <h1 class="modalForFinalStepAtEnrollmentProcessTitle"><b class="modalForFinalStepAtEnrollmentProcessTitleWarn">Tem certeza</b> que deseja confirmar a solicitação da matrícula <b class="modalForFinalStepAtEnrollmentProcessTitleWarn2">abaixo</b>? <b class="modalForFinalStepAtEnrollmentProcessTitleWarn">Verifique</b> antes de confirmar.</h1>
+                </div>
+                <div class="finalEnrollmentListArea">
+                    <table id="tableForFinalEnrollmentList" name="tableForFinalEnrollmentList" class="table tableGioiano">
+                        <thead>
+                            <tr>
+                                <th>Dia da semana</th>
+                                <th>Horário</th>
+                                <th>Disciplina</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Segunda-feira</td>
+                                <td>08h30 às 12h</td>
+                                <td>Matemática Discreta</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     var forEnrollment = [];
+    var listOfTopicScheduleTimes = [];
     $(document).ready(function () {
         loadCourses();
     });
+
+    function sendTopicScheduleTimesTopicDivs(periodTypeChosed){
+        if (periodTypeChosed == "Matutino") {
+            document.getElementById('btnMatutino').className = "btnGioiano btnGioianoDisabled";
+            document.getElementById('btnNoturno').className = "btnGioiano";
+        } else {
+            document.getElementById('btnNoturno').className = "btnGioiano btnGioianoDisabled";
+            document.getElementById('btnMatutino').className = "btnGioiano";
+        }
+        console.log(listOfTopicScheduleTimes);
+        for(var n = 0; n < listOfTopicScheduleTimes.length; n++){
+            if (listOfTopicScheduleTimes[n].periodTypeScheduled == periodTypeChosed){
+                document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).textContent = "";
+                document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).innerHTML = listOfTopicScheduleTimes[n].startTime.replace(":", "h").substr(0, 5) + " às " + listOfTopicScheduleTimes[n].endTime.replace(":", "h").substr(0, 5);
+            }
+        }
+    }
 
     function toStep2(){
         var courseIdSelected = document.getElementById('saveCourseIdSelected').value;
@@ -55,6 +121,10 @@
             step1Div.style.pointerEvents = "none";
             loadTopicsByCourseAndSemAvailability(courseIdSelected, 1);
         }
+    }
+
+    function toStep3(){
+        btnForFinalModal.click();
     }
 
     function getCourses() {
@@ -153,6 +223,11 @@
                 forEnrollment.splice(p ,1);
                 document.getElementById(topicNameChosed).style.backgroundColor = "#e1e2e3";
                 document.getElementById(topicNameChosed).style.borderColor = "#e1e2e3";
+                if (forEnrollment.length == 0){
+                    document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
+                } else {
+                    document.getElementById('btnForStep3').className = "btnGioiano";
+                }
                 return;
             }
         }
@@ -167,10 +242,16 @@
         forEnrollment.push(UserAccountCourseScheduleItem);
         document.getElementById(topicNameChosed).style.backgroundColor = "#a2dba9";
         document.getElementById(topicNameChosed).style.borderColor = "#a2dba9";
+        if (forEnrollment.length == 0) {
+            document.getElementById('btnForStep3').className = "btnGioiano btnGioianoDisabled";
+        } else {
+            document.getElementById('btnForStep3').className = "btnGioiano";
+        }
     }
 
     function loadTopicsByCourseAndSemAvailability(courseId, semAvailability) {
         getTopicsByCourseIdAndSemAvailability(courseId, semAvailability).then(result => {
+            loadTopicScheduleTimesByCourse(courseId);
             for(var i = 0; i < result.length; i++){
                 var topicDiv = document.createElement("div");
                 topicDiv.className = "topic enrollmentException";
@@ -194,7 +275,8 @@
 
                 var topicPeriod = document.createElement("b");
                 topicPeriod.className = "topicPeriod";
-                topicPeriod.textContent = "19h às 20h30";
+                topicPeriod.textContent = "A definir";
+                topicPeriod.id = "topicPeriod" + result[i].topicId;
                 topicPeriodTitle.appendChild(topicPeriod);
 
                 topicInfoDiv.appendChild(topicTitleLabel);
@@ -218,6 +300,30 @@
                 document.getElementById("topicDisplay").appendChild(topicDiv);
             }
             document.getElementById('totalTopicsCreated').value = result.length;
+        });
+    }
+
+    function getTopicScheduleTimesByCourse() {
+        return new Promise((resolve, reject) => {
+            var courseIdChosed = document.getElementById('saveCourseIdSelected').value;
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetTopicScheduleTimesByCourseId", "Study")',
+                "method": "GET",
+                "data": { 'courseId': courseIdChosed }
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function loadTopicScheduleTimesByCourse() {
+        getTopicScheduleTimesByCourse().then(result => {
+            listOfTopicScheduleTimes = result;
         });
     }
 </script>

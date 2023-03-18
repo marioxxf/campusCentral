@@ -9,5 +9,10 @@
         public float TopicFinalScore { get; set;}
         public int TopicPeriodAttended { get; set;}
         public int CourseId { get; set;}
+        public TimeSpan? StartPeriodScheduled { get; set; }
+        public TimeSpan? EndPeriodScheduled { get; set; }
+        public string ClassDay { get; set; }
+        public string PeriodTypeScheduled { get; set; }
+
     }
 }

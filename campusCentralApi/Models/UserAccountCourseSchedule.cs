@@ -21,5 +21,13 @@ namespace campusCentralApi.Models
         public float TopicFinalScore { get; set; }
         public int? TopicPeriodAttended { get; set; }
         public int? CourseId { get; set; }
+        public TimeSpan? StartPeriodScheduled { get; set; }
+        public TimeSpan? EndPeriodScheduled { get; set; }
+        [StringLength(25)]
+        [Unicode(false)]
+        public string ClassDay { get; set; }
+        [StringLength(25)]
+        [Unicode(false)]
+        public string PeriodTypeScheduled { get; set; }
     }
 }
