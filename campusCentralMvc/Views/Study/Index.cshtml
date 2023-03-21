@@ -27,7 +27,7 @@
         <label class="enrollmentTitle">Abaixo, as matérias disponíveis para matrícula, referente ao curso escolhido:</label>
         <div class="topicDisplay" id="topicDisplay" name="topicDisplay">
         </div>
-        <label class="enrollmentTitle">Você quer estudar em qual período?</label>
+        <label class="enrollmentTitle">Em qual período deseja estudar?</label>
         <div class="periodTypeScheduledBtnsArea">
             <div>
                 <input class="btnGioiano" type="button" id="btnMatutino" name="btnMatutino" value="Matutino" onclick="sendTopicScheduleTimesTopicDivs(this.value); checkRulesForPassToStep3();">
@@ -69,11 +69,6 @@
                         </thead>
                         <tbody>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td>Relação final das matérias pré-matriculadas</td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -126,28 +121,22 @@
         }
     }
 
-    function toStep3(){
-        var table = document.getElementById("tableForFinalEnrollmentList"); // seleciona a tabela pelo id
-        var rows = table.getElementsByTagName("tr"); // seleciona todas as linhas da tabela
+    function sortByWeekDay(arr) {
+        const daysOfWeek = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'];
+        return arr.sort((a, b) => {
+            const dayIndexA = daysOfWeek.indexOf(a.weekDay);
+            const dayIndexB = daysOfWeek.indexOf(b.weekDay);
+            return dayIndexA - dayIndexB;
+        });
+    }
 
-        for (var i = rows.length - 1; i > 0; i--) { // remove as linhas do tbody, começando pela última
-            rows[i].parentNode.removeChild(rows[i]); 
-        }
+    function toStep3(){
+        var arrayForFinalStep = [];
 
         btnForFinalModal.click();
-        // Crie um array com 7 itens, cada item representa uma aula.
         var forEnrollmentFinalList = forEnrollment;
-
-        // Obtenha uma referência à tabela HTML pelo ID.
-        var tabela = document.getElementById("tableForFinalEnrollmentList");
-
-        // Percorra o array de aulas e adicione uma nova linha para cada item na tabela.
         for (var i = 0; i < forEnrollmentFinalList.length; i++) {
             var aula = forEnrollmentFinalList[i];
-            var novaLinha = tabela.insertRow(-1);
-            var novaColuna1 = novaLinha.insertCell(0);
-            var novaColuna2 = novaLinha.insertCell(1);
-            var novaColuna3 = novaLinha.insertCell(2);
             var topicIdForEnrollmentFinalList = 0;
 
             for(var x = 0; x < topicsByCourseSelected.length; x++){
@@ -155,10 +144,42 @@
                     topicIdForEnrollmentFinalList  = topicsByCourseSelected[x].topicId;
                 }
             }
-            novaColuna1.innerHTML = document.getElementById('dayTitle' + topicIdForEnrollmentFinalList).textContent;
-            novaColuna2.innerHTML = document.getElementById('topicPeriod' + topicIdForEnrollmentFinalList).textContent;
-            novaColuna3.innerHTML = aula.TopicNameAssigned;
+            var confirmationObject = {
+                weekDay: document.getElementById('dayTitle' + topicIdForEnrollmentFinalList).textContent,
+                scheduledTime: document.getElementById('topicPeriod' + topicIdForEnrollmentFinalList).textContent,
+                topicName: aula.TopicNameAssigned
+            };
+            arrayForFinalStep.push(confirmationObject);
         }
+
+        arrayForFinalStep = sortByWeekDay(arrayForFinalStep);
+        populateFinalStepTable(arrayForFinalStep);
+    }
+
+    function populateFinalStepTable(arrayCharged) {
+        const tableBody = document.getElementById('tableForFinalEnrollmentList');
+        var rows = tableBody.getElementsByTagName("tr"); 
+        for (var i = rows.length - 1; i > 0; i--) { 
+            rows[i].parentNode.removeChild(rows[i]);
+        }
+
+        arrayCharged.forEach(obj => {
+            const row = document.createElement('tr');
+
+            const weekDayCell = document.createElement('td');
+            weekDayCell.textContent = obj.weekDay;
+            row.appendChild(weekDayCell);
+
+            const scheduledTimeCell = document.createElement('td');
+            scheduledTimeCell.textContent = obj.scheduledTime;
+            row.appendChild(scheduledTimeCell);
+
+            const topicNameCell = document.createElement('td');
+            topicNameCell.textContent = obj.topicName;
+            row.appendChild(topicNameCell);
+
+            tableBody.appendChild(row);
+        });
     }
 
     function getCourses() {
