@@ -45,6 +45,7 @@
 <input type="hidden" id="saveCourseIdSelected" name="saveCotopicPeriodurseIdSelected" value="0" />
 <input type="hidden" id="totalCoursesLoaded" name="totalCoursesLoaded" value="0" />
 <input type="hidden" id="periodTypeChosed" name="periodTypeChosed" value="" />
+<input type="hidden" id="classGroupSelectedAfterAnalysis" name="classGroupSelectedAfterAnalysis" value="" />
 <a class="dropdown-item" data-bs-toggle="modal" href="#" data-bs-target="#modalForFinalStep" style="display:none;" id="btnForFinalModal" name="btnForFinalModal">For open modal</a>
 
 <!-- Modal -->
@@ -124,6 +125,7 @@
             step1Div.style.opacity = "0.3";
             step1Div.style.pointerEvents = "none";
             loadTopicsByCourseAndSemAvailability(courseIdSelected, 1);
+            loadClassGroupAvailabilityByCourseId();
         }
     }
 
@@ -398,6 +400,30 @@
         });
     }
 
+    function getClassGroupAvailabilityByCourseId() {
+        return new Promise((resolve, reject) => {
+            var courseIdSelectedByUser = document.getElementById('saveCourseIdSelected').value;
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "dataType": 'JSON',
+                "url": '@Url.Action("GetClassGroupAvailabilityByCourseId", "Study")',
+                "method": "GET",
+                "data": { 'courseId': courseIdSelectedByUser }
+            };
+
+            $.ajax(settings).done(function (response) {
+                resolve(response);
+            });
+        });
+    }
+
+    function loadClassGroupAvailabilityByCourseId() {
+        getClassGroupAvailabilityByCourseId().then(result => {
+            document.getElementById('classGroupSelectedAfterAnalysis').value = result[0].classGroupId;
+        });
+    }
+
     function getTopicScheduleTimesByCourse() {
         return new Promise((resolve, reject) => {
             var courseIdChosed = document.getElementById('saveCourseIdSelected').value;
@@ -440,30 +466,34 @@
 
     function sendEnrollmentReq(){
         var topicsForEnrollmentReq = finalTopicListOrderByWeekDay;
-        var userAccountCourseScheduleItem = [];
+        var userAccountCourseSchedules = [];
         var courseIdOfThisTopic = document.getElementById('saveCourseIdSelected').value;
         var periodTypeChosedByUser = document.getElementById('periodTypeChosed').value;
+        var classGroupIdChosedBySystem = document.getElementById('classGroupSelectedAfterAnalysis').value;
         
         for(var n = 0; n < topicsForEnrollmentReq.length; n++){
             var topicScheduledTimes = topicsForEnrollmentReq[n].scheduledTime;
             var [TimeOne, TimeTwo] = parseHorarios(topicScheduledTimes);
-            var UserAccountCourseScheduleItem = {
+            var UserAccountCourseSchedule = {
+                UserAccountCourseScheduleId: 0,
                 UserAccountId: "@userAccountIdLogged",
                 TopicNameAssigned: topicsForEnrollmentReq[n].topicName,
                 TopicTravelStatus: 1,
-                TopicFinalScore: null,
+                TopicFinalScore: 0,
                 TopicPeriodAttended: getYearAndSemester(),
                 CourseId: courseIdOfThisTopic,
                 StartPeriodScheduled: TimeOne.toLocaleTimeString(),
                 EndPeriodScheduled: TimeTwo.toLocaleTimeString(),
                 ClassDay: topicsForEnrollmentReq[n].weekDay,
                 PeriodTypeScheduled: periodTypeChosedByUser,
-                ClassGroupId: ''
+                ClassGroupId: classGroupIdChosedBySystem
             };
-            console.log(UserAccountCourseScheduleItem);
-            if(n == 0){
-                return;
-            }
+            userAccountCourseSchedules.push(UserAccountCourseSchedule);
         }
+
+        $.post("/Study/AddUserAccountCourseScheduleList", { userAccountCourseSchedules: userAccountCourseSchedules })
+            .done(function (data) {
+                location.reload();
+        });
     }
 </script>

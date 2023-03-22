@@ -51,15 +51,15 @@ namespace campusCentralApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddUserAccountCourseSchedule(UserAccountCourseSchedule UserAccountCourseSchedule)
+        public async Task<ActionResult> AddUserAccountCourseSchedule(List<UserAccountCourseSchedule> userAccountCourseSchedules)
         {
-            _userAccountCourseScheduleRepository.Create(UserAccountCourseSchedule);
-            if(await _userAccountCourseScheduleRepository.SaveAllAsync())
+            _userAccountCourseScheduleRepository.CreateMultiple(userAccountCourseSchedules);
+            if (await _userAccountCourseScheduleRepository.SaveAllAsync())
             {
-                return Ok(UserAccountCourseSchedule);
+                return Ok(userAccountCourseSchedules);
             }
 
-            return BadRequest("Error at create a new student.");
+            return BadRequest("Error at creation.");
         }
 
         [HttpPut]

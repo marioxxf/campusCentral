@@ -27,6 +27,7 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 builder.Services.AddScoped<IUserAccountCourseScheduleRepository, UserAccountCourseScheduleRepository>();
 builder.Services.AddScoped<ITopicScheduleTimeRepository, TopicScheduleTimeRepository>();
+builder.Services.AddScoped<IClassGroupRepository, ClassGroupRepository>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

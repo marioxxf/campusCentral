@@ -13,5 +13,6 @@
         public TimeSpan? EndPeriodScheduled { get; set; }
         public string ClassDay { get; set; }
         public string PeriodTypeScheduled { get; set; }
+        public int ClassGroupId { get; set; }
     }
 }

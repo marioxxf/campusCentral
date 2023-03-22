@@ -16,6 +16,11 @@ namespace campusCentralApi.Repositories
             _context.UserAccountCourseSchedule.Add(UserAccountCourseSchedule);
         }
 
+        public void CreateMultiple(List<UserAccountCourseSchedule> UserAccountCourseSchedules)
+        {
+            _context.UserAccountCourseSchedule.AddRange(UserAccountCourseSchedules);
+        }
+
         public void Delete(UserAccountCourseSchedule UserAccountCourseSchedule)
         {
             _context.UserAccountCourseSchedule.Remove(UserAccountCourseSchedule);
