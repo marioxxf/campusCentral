@@ -599,3 +599,32 @@ select {
 .tableGioiano{
     font-weight: normal;
 }
+
+.finalEnrollmentMsg {
+    font-size: 13px;
+    color: #969595;
+}
+
+.finalEnrollmentWarnMsg {
+    font-size: 13px;
+    color: #969595;
+}
+
+/* (Start) For final enrollment's process (in modal) */
+.destaque {
+    animation-name: destaque;
+    animation-duration: 5s;
+}
+
+@keyframes destaque {
+    from {
+        background-color: white;
+        border-color: white;
+    }
+
+    to {
+        background-color: #474042;
+        border-color: #474042;
+    }
+}
+/* (End) For final enrollment's process (in modal) */

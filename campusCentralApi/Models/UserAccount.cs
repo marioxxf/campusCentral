@@ -34,6 +34,5 @@ namespace campusCentralApi.Models
         [StringLength(175)]
         [Unicode(false)]
         public string SessionId { get; set; }
-        public int? ClassGroupId { get; set; }
     }
 }

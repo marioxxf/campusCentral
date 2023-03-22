@@ -44,6 +44,7 @@
 <input type="hidden" id="totalTopicsCreated" name="totalTopicsCreated" value="0" />
 <input type="hidden" id="saveCourseIdSelected" name="saveCotopicPeriodurseIdSelected" value="0" />
 <input type="hidden" id="totalCoursesLoaded" name="totalCoursesLoaded" value="0" />
+<input type="hidden" id="periodTypeChosed" name="periodTypeChosed" value="" />
 <a class="dropdown-item" data-bs-toggle="modal" href="#" data-bs-target="#modalForFinalStep" style="display:none;" id="btnForFinalModal" name="btnForFinalModal">For open modal</a>
 
 <!-- Modal -->
@@ -70,6 +71,9 @@
                         <tbody>
                         </tbody>
                     </table>
+                    <p class="finalEnrollmentMsg">Você <b class="finalEnrollmentWarnMsg">concorda</b> com a relação de matérias acima que irão ser matriculadas para você estudar?</p>
+                    <input class="btnGioiano" type="button" name="confirmFinalRequest" value="Concordo com a lista final das matérias matriculadas" id="confirmFinalRequest" onclick="confirmFinalUltimateQuestionStep()"/><br /><br />
+                    <input class="btnGioiano btnGioianoDisabled" type="button" value="Enviar solicitação de matrícula" id="btnForConfirmFinalRequest" name="btnForConfirmFinalRequest" onclick="sendEnrollmentReq()">
                 </div>
             </div>
             <div class="modal-footer">
@@ -82,6 +86,7 @@
     var forEnrollment = [];
     var topicsByCourseSelected = [];
     var listOfTopicScheduleTimes = [];
+    var finalTopicListOrderByWeekDay = [];
     var checkIfTypePeriodScheduleHasBeenChoosed = "notPicked";
     var checkIfTypePeriodScheduleHasBeenChoosed2 = "notPicked";
     $(document).ready(function () {
@@ -101,6 +106,7 @@
                 document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).textContent = "";
                 document.getElementById('topicPeriod' + listOfTopicScheduleTimes[n].topicId).innerHTML = listOfTopicScheduleTimes[n].startTime.replace(":", "h").substr(0, 5) + " às " + listOfTopicScheduleTimes[n].endTime.replace(":", "h").substr(0, 5);
                 document.getElementById('dayTitle' + listOfTopicScheduleTimes[n].topicId).innerHTML = listOfTopicScheduleTimes[n].day;
+                document.getElementById('periodTypeChosed').value = periodTypeChosed;
             }
         }
     }
@@ -153,6 +159,7 @@
         }
 
         arrayForFinalStep = sortByWeekDay(arrayForFinalStep);
+        finalTopicListOrderByWeekDay = arrayForFinalStep;
         populateFinalStepTable(arrayForFinalStep);
     }
 
@@ -409,9 +416,54 @@
         });
     }
 
+    function parseHorarios(horarios) {
+        const [inicio, fim] = horarios.split(' às ');
+
+        const timeOne = new Date(`1970-01-01T${inicio.replace('h', ':')}:00`);
+        const timeTwo = new Date(`1970-01-01T${fim.replace('h', ':')}:00`);
+
+        return [timeOne, timeTwo];
+    }
+
     function loadTopicScheduleTimesByCourse() {
         getTopicScheduleTimesByCourse().then(result => {
             listOfTopicScheduleTimes = result;
         });
+    }
+
+    function confirmFinalUltimateQuestionStep(){
+        document.getElementById('btnForConfirmFinalRequest').className = "btnGioiano";
+        document.getElementById('confirmFinalRequest').className = "btnGioiano btnGioianoDisabled";
+        const botao2 = document.querySelector('#btnForConfirmFinalRequest');
+        botao2.classList.add('destaque');
+    }
+
+    function sendEnrollmentReq(){
+        var topicsForEnrollmentReq = finalTopicListOrderByWeekDay;
+        var userAccountCourseScheduleItem = [];
+        var courseIdOfThisTopic = document.getElementById('saveCourseIdSelected').value;
+        var periodTypeChosedByUser = document.getElementById('periodTypeChosed').value;
+        
+        for(var n = 0; n < topicsForEnrollmentReq.length; n++){
+            var topicScheduledTimes = topicsForEnrollmentReq[n].scheduledTime;
+            var [TimeOne, TimeTwo] = parseHorarios(topicScheduledTimes);
+            var UserAccountCourseScheduleItem = {
+                UserAccountId: "@userAccountIdLogged",
+                TopicNameAssigned: topicsForEnrollmentReq[n].topicName,
+                TopicTravelStatus: 1,
+                TopicFinalScore: null,
+                TopicPeriodAttended: getYearAndSemester(),
+                CourseId: courseIdOfThisTopic,
+                StartPeriodScheduled: TimeOne.toLocaleTimeString(),
+                EndPeriodScheduled: TimeTwo.toLocaleTimeString(),
+                ClassDay: topicsForEnrollmentReq[n].weekDay,
+                PeriodTypeScheduled: periodTypeChosedByUser,
+                ClassGroupId: ''
+            };
+            console.log(UserAccountCourseScheduleItem);
+            if(n == 0){
+                return;
+            }
+        }
     }
 </script>
