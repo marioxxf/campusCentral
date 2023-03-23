@@ -484,6 +484,9 @@ select {
     font-weight: bold;
 }
 
+.myCourseScheduleCourseName{
+    font-weight: 100;
+}
 /* Dropdown Gioiano */
 .dropdownGioiano {
     margin-top: -3px;

@@ -8,6 +8,7 @@
     var userAccountIdLogged = session.GetString("UserAccountIdLogged");
     var userAccountUsernameLogged = session.GetString("UserAccountUsernameLogged");
     var userAccountNameLogged = session.GetString("UserAccountNameLogged");
+    int currentUserAccountCourseIdEnrolled = 0;
 
     List<UserAccountCourseSchedule> userAccountCourseSchedules = new List<UserAccountCourseSchedule>();
     var authController = new AuthController();
@@ -16,9 +17,25 @@
         userAccountCourseSchedules = await authController.GetUserAccountCourseScheduleByUserAccountId(int.Parse(userAccountIdLogged));
     }
 
-    List<Topic> topicsByCourseId = new List<Topic>();
+    List<Topic> allTopics = new List<Topic>();
     var studyDataController = new StudyController();
-    topicsByCourseId = await studyDataController.GetAllTopics();
+    allTopics = await studyDataController.GetAllTopics();
+
+    List<Course> allCourses = new List<Course>();
+    var studyDataController2 = new StudyController();
+    allCourses = await studyDataController2.GetAllCourses();
+
+    var courseNameOfCurrentUserAccountLogged = "";
+    foreach(var course in allCourses)
+    {
+        foreach(var topic in userAccountCourseSchedules)
+        {
+            if(topic.CourseId == course.CourseId)
+            {
+                courseNameOfCurrentUserAccountLogged = course.Name;
+            }
+        }
+    }
 }
 @{
     if (userAccountIdLogged == "" || userAccountIdLogged == "0" || userAccountIdLogged == null)
@@ -29,9 +46,10 @@
     {
         <div class="mainDiv">
             <div class="myCourseScheduleMain">
-                <label>Minhas matérias matriculadas para o semestre atual</label>
+                <label>Minhas matérias matriculadas para o semestre atual<br />
+                    Curso <b class="myCourseScheduleCourseName" id="currentCourseOfUserAccountName" name="currentCourseOfUserAccountName">@courseNameOfCurrentUserAccountLogged</b>
+                </label><br />
                 <div class="topicDisplay">
-
                     @{
                         foreach (var topic in userAccountCourseSchedules)
                         {
@@ -50,10 +68,11 @@
                                 topicStatusColor = "#c91a1a";
                             }
 
-                            foreach (var topicInfo in topicsByCourseId)
+                            foreach (var topicInfo in allTopics)
                             {
-                                if(topicInfo.Name == topic.TopicNameAssigned)
+                                if(topicInfo.Name == topic.TopicNameAssigned && topicInfo.CourseId == topic.CourseId)
                                 {
+                                    currentUserAccountCourseIdEnrolled = topic.CourseId;
                                     <div class="topic">
                                         <div style="display: flex;">
                                             <div>
@@ -92,6 +111,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         loadUserAccountCourseSchedule();
+        loadCourses();
     });
     function getUserAccountCourseSchedule(userAccountId) {
         return new Promise((resolve, reject) => {
@@ -112,12 +132,7 @@
 
     function loadUserAccountCourseSchedule() {
         getUserAccountCourseSchedule('1').then(result => {
-            console.log(result); 
-            
-            // Seleciona a tabela HTML
 		    var table = document.getElementById("myTable");
-
-		    // Adiciona as linhas na tabela com as informações do array "result"
 		    for (var i = 0; i < result.length; i++) {
 			    var row = table.insertRow(-1);
 			    var cell1 = row.insertCell(0);
