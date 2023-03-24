@@ -28,6 +28,7 @@
    </details>
    <details>
       <summary><h4>1.4 Enrollment System 1.0</h4></summary>
-      Check out this feature running visiting the following link: https://youtu.be/_IOPFw8OKxQ
+      Check out this feature running visiting the following link: https://youtu.be/_IOPFw8OKxQ<br /><br />
+      <img src="https://i.imgur.com/kPiM6Pa.png"></img>
    </details>
 </details>
