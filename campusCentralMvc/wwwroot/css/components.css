@@ -631,3 +631,14 @@ select {
     }
 }
 /* (End) For final enrollment's process (in modal) */
+
+.topicSemesterAvailabilityLabel {
+    font-size: 12px;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+.topicSemesterAvailabilityLabel2 {
+    font-size: 13px;
+    white-space: nowrap;
+}

@@ -24,6 +24,7 @@
 
 <div class="topicAreaForEnrollment" id="topicAreaForEnrollment" name="topicAreaForEnrollment">
     <div class="mainDiv" id="mainDiv2" name="mainDiv2">
+        <input class="btnGioiano" type="button" value="Voltar" id="btnToBackForStep1" name="btnToBackForStep1" onclick="backToStep1()"><br /><br />
         <label class="enrollmentTitle">Abaixo, as matérias disponíveis para matrícula, referente ao curso escolhido:</label>
         <div class="topicDisplay" id="topicDisplay" name="topicDisplay">
         </div>
@@ -88,6 +89,7 @@
     var topicsByCourseSelected = [];
     var listOfTopicScheduleTimes = [];
     var finalTopicListOrderByWeekDay = [];
+    var topicDivsByIdCreated = [];
     var checkIfTypePeriodScheduleHasBeenChoosed = "notPicked";
     var checkIfTypePeriodScheduleHasBeenChoosed2 = "notPicked";
     $(document).ready(function () {
@@ -113,6 +115,8 @@
     }
 
     function toStep2(){
+        document.getElementById('btnMatutino').className = "btnGioiano";
+        document.getElementById('btnNoturno').className = "btnGioiano";
         var courseIdSelected = document.getElementById('saveCourseIdSelected').value;
         if(courseIdSelected == "0"){
             alert("Escolha um dos cursos para prosseguir, por favor.");
@@ -307,6 +311,10 @@
     }
 
     function manageEnrollmentList(courseIdOfThisTopic, topicNameChosed) {
+        const botao2 = document.querySelector('#btnForConfirmFinalRequest');
+        botao2.classList.remove('destaque');
+        document.getElementById('btnForConfirmFinalRequest').className = "btnGioiano btnGioianoDisabled";
+        document.getElementById('confirmFinalRequest').className = "btnGioiano";
         checkRulesForPassToStep3();
         for(var p = 0; p < forEnrollment.length; p++){
             if(forEnrollment[p].TopicNameAssigned == topicNameChosed){
@@ -375,8 +383,23 @@
                 dayTitle.textContent = result[i].day;
                 dayTitle.id = "dayTitle" + result[i].topicId;
 
+                var topicSemesterAvailabilityText = document.createElement("label");
+                topicSemesterAvailabilityText.className = "topicSemesterAvailabilityLabel";
+                topicSemesterAvailabilityText.textContent = "Matéria do ";
+
+                var semesterLabel = document.createElement("b");
+                semesterLabel.className = "topicSemesterAvailabilityLabel2";
+                semesterLabel.textContent = convertNumberForDescriptionNumber(result[i].semesterAvailability) + " ";
+                topicSemesterAvailabilityText.appendChild(semesterLabel);
+
+                var topicSemesterAvailabilityText2 = document.createElement("label");
+                topicSemesterAvailabilityText2.className = "topicSemesterAvailabilityLabel";
+                topicSemesterAvailabilityText2.textContent = "semestre (" + result[i].semesterAvailability + "º)";
+                topicSemesterAvailabilityText.appendChild(topicSemesterAvailabilityText2);
+
                 topicInfoDiv.appendChild(topicTitleLabel);
                 topicInfoDiv.appendChild(document.createElement("br"));
+                topicInfoDiv.appendChild(topicSemesterAvailabilityText);
                 topicInfoDiv.appendChild(document.createElement("br"));
                 topicInfoDiv.appendChild(document.createElement("br"));
                 topicInfoDiv.appendChild(topicPeriodTitle);
@@ -395,9 +418,36 @@
 
                 topicDiv.appendChild(flexDiv);
                 document.getElementById("topicDisplay").appendChild(topicDiv);
+                topicDivsByIdCreated.push(topicDiv.id);
             }
             document.getElementById('totalTopicsCreated').value = result.length;
         });
+    }
+
+    function convertNumberForDescriptionNumber(numero){
+        if (numero === 1) {
+            return 'primeiro';
+        } else if (numero === 2) {
+            return 'segundo';
+        } else if (numero === 3) {
+            return 'terceiro';
+        } else if (numero === 4) {
+            return 'quarto';
+        } else if (numero === 5) {
+            return 'quinto';
+        } else if (numero === 6) {
+            return 'sexto';
+        } else if (numero === 7) {
+            return 'sétimo';
+        } else if (numero === 8) {
+            return 'oitavo';
+        } else if (numero === 9) {
+            return 'nono';
+        } else if (numero === 10) {
+            return 'décimo';
+        } else {
+            return 'Número fora da faixa de 1 a 10';
+        }
     }
 
     function getClassGroupAvailabilityByCourseId() {
@@ -495,5 +545,32 @@
             .done(function (data) {
                 location.reload();
         });
+    }
+
+    function backToStep1(){
+        topicsByCourseSelected = [];
+        forEnrollment = [];
+        topicsByCourseSelected = [];
+        listOfTopicScheduleTimes = [];
+        finalTopicListOrderByWeekDay = [];
+        const step2Div = document.getElementById("topicAreaForEnrollment");
+        step2Div.style.opacity = "0.3";
+        step2Div.style.pointerEvents = "none";
+
+        const step1Div = document.getElementById("selectCourseArea");
+        step1Div.style.opacity = "1";
+        step1Div.style.pointerEvents = "auto";
+
+        document.getElementById('btnMatutino').className = "btnGioiano btnGioianoDisabled";
+        document.getElementById('btnNoturno').className = "btnGioiano btnGioianoDisabled";
+        for(var n = 0; n < topicDivsByIdCreated.length; n++){
+            var div = document.getElementById(topicDivsByIdCreated[n]);
+            div.remove();
+        }
+        topicDivsByIdCreated = [];
+        const botao2 = document.querySelector('#btnForConfirmFinalRequest');
+        botao2.classList.remove('destaque');
+        document.getElementById('btnForConfirmFinalRequest').className = "btnGioiano btnGioianoDisabled";
+        document.getElementById('confirmFinalRequest').className = "btnGioiano";
     }
 </script>
