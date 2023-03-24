@@ -26,4 +26,8 @@
       </details>
       <img src="https://i.imgur.com/jsic7CB.png"></img>
    </details>
+   <details>
+      <summary><h4>1.4 Enrollment System 1.0</h4></summary>
+      Check out this feature running visiting the following link: https://youtu.be/_IOPFw8OKxQ
+   </details>
 </details>
